@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from lighttools.apodization import tokenize, read_sgmesh, read_vgmesh, read_cgmesh
+from lighttools.apodization import tokenize, read_sgmesh, read_vgmesh, read_cgmesh, SurfaceGridMesh
 
 PRECISION = 1e-06
 
@@ -123,6 +123,12 @@ def test_sgmesh_write():
     with open(f.name) as f:
         assert f.read() == sgmesh_8
     os.remove(f.name)
+
+
+def test_sgmesh_optional_bounds():
+    values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    sgmesh = SurfaceGridMesh(values)
+    assert sgmesh.bounds is None
 
 
 def test_sgmesh_to_csv():

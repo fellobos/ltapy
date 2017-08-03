@@ -328,6 +328,9 @@ class SurfaceGridMesh(GridMesh):
 
     hdparams = sghdparams
 
+    def __init__(self, values, bounds=None):
+        super().__init__(values, bounds)
+
     def _write_header(self, filepath, comment):
         super()._write_header(filepath, comment)
         with open(filepath, "a") as f:
