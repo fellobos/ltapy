@@ -3,18 +3,10 @@
 __version__ = "1.0.0"
 
 
-# TODO: Big namespace cleanup
-#   - Import only frequently used classes and functions to global namespace
-#     (e.g. lts.Session(), lts.config, lts.binspace(), ...)
-#   - Delete names of imported modules with del statement from global
-#     namespace
-#   - In public modules (e.g. apodization.py), hide non-public objects
-#     from namespace with "_" prefix. The same is true for imported module
-#     objects, e.g. import os as _os.
-
-
-from .session import Session
 from .instinfo import list_products
+from .session import Session
+from .utils import getcff
+from .vslogger import VolumeScatterLogger
 
 from . import apodization
 
