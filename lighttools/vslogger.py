@@ -1,3 +1,7 @@
+"""
+Provide an interface to the LightTools Volume Scatter Logger utility.
+"""
+
 from . import error
 
 
@@ -13,6 +17,26 @@ class VolumeScatterLogger():
     Attributes:
         lt (ILTAPIx): A handle to the LightTools session.
         key (str): The data access key of the Volume Scatter Logger.
+
+    Examples:
+        Connect to a volume scatter logger attached to a solid object with 
+        scattering material.
+
+        >>> key = (
+                "SOLID[Phosphor].VOLUME_INTERFACE[VolumeInterface_EOS]"
+                ".VOLUME_SCATTER_LOG[VolumeScatterLog]"
+            )
+        >>> vslogger = VolumeScatterLogger(lt, key)
+
+        Set number of bins and domain size along global axes.
+
+        >>> vslogger.xbinning = (11, -1, 1)
+        >>> vslogger.ybinning = (11, -1, 1)
+        >>> vslogger.zbinning = (3, 0, 0.07)
+
+        Export the binned conversion loss data to a file.
+
+        >>> vslogger.export(dtype="ConvertedLoss")
     """
 
     def __init__(self, lt, key):
@@ -195,6 +219,9 @@ class VolumeScatterLogger():
 
     @property
     def binvolume(self):
+        """
+        float: Volume of a single bin.
+        """
         numx, minx, maxx = self.xbinning
         numy, miny, maxy = self.ybinning
         numz, minz, maxz = self.zbinning
