@@ -10,7 +10,9 @@ database lists.
 
 import functools
 import inspect
+import os
 import string
+import tempfile
 
 import pythoncom
 import win32com.client
@@ -46,6 +48,7 @@ def LTAPI(comobj, rebuild=False):
     # additional features.
     enable_exceptions(ltapi)
     improve_dblist_interface(ltapi)
+    fix_dbkeydump_argspec(ltapi)
 
     return ltapi
 
@@ -176,3 +179,51 @@ def improve_dblist_interface(ltapi):
 
     DbList.__doc__ = doc
     setattr(ltapi.__class__, "DbList", DbList)
+
+
+def fix_dbkeydump_argspec(ltapi):
+    """
+    Fix a bug in the argspec of the DbKeyDump API method.
+
+    The optional parameter fileName has a wrong default value of "0".
+    If fileName is not specified, the list of data values is written
+    to a file with name "0", instead of being printed to the LightTools
+    console window.
+
+    Replace the original DbKeyDump API method with a wrapper function that
+    provides a correct default value for the fileName parameter.
+    As additional feature, printed output also goes to the Python console
+    window.
+
+    Args:
+        ltapi (ILTAPIx): A handle to the LightTools session.
+
+    Notes:
+        The original DbKeyDump API method is not overwritten and can be
+        accessed via single underscore prefix (ltapi._DbKeyDump).
+    """
+    # This function must be executed only once, to avoid that the original
+    # ltapi._DbKeyDump() function gets overwritten.
+    if hasattr(ltapi, "_DbKeyDump"):
+        return
+
+    doc = ltapi.DbKeyDump.__func__.__doc__
+    setattr(ltapi.__class__, "_DbKeyDump", ltapi.DbKeyDump)
+
+    def DbKeyDump(self, dataKey=pythoncom.Empty, fileName=pythoncom.Empty):
+        """
+        Call the original DbKeyDump API method with correct parameter
+        values and print data values also to the Python console window.
+        """
+        print_to_console = (fileName == pythoncom.Empty)
+        if print_to_console:
+            with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+                ltapi._DbKeyDump(dataKey, f.name)
+                f.seek(0)
+                print(f.read())
+            os.remove(f.name)
+            fileName = ""
+        return ltapi._DbKeyDump(dataKey, fileName)
+
+    DbKeyDump.__doc__ = doc
+    setattr(ltapi.__class__, "DbKeyDump", DbKeyDump)

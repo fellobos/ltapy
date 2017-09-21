@@ -41,7 +41,7 @@ def raise_exception_on_error(ltapi, func_name, *args):
         # Functions with error code and value, e.g. DbGet().
         return_value, error_code = return_values
         if func_name == "DbKeyDump":  # wrong order of return values
-            error_code, return_value = return_value, error_code
+            error_code, return_value = return_value, None
         error_code = int(error_code)
     elif isinstance(return_values, tuple) and len(return_values) == 3:
         # Functions with error code, value and filter, e.g. GetMeshData().
