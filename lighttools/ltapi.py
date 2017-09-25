@@ -10,6 +10,7 @@ database lists.
 
 import functools
 import inspect
+import logging
 import os
 import string
 import tempfile
@@ -20,6 +21,9 @@ import win32com.client
 from . import comutils
 from . import dbaccess
 from . import error
+
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
 
 
 def LTAPI(comobj, rebuild=False):
@@ -142,8 +146,11 @@ def catch_return_value(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
-        ltapi = args[0]
-        return error.raise_exception_on_error(ltapi, func.__name__, result)
+        ltapi, *args = args
+        func_name = func.__name__
+        msg = "Calling LTAPI function {}, args={}, kwargs={}, result={}"
+        log.debug(msg.format(repr(func_name), args, kwargs, result))
+        return error.raise_exception_on_error(ltapi, func_name, result)
     return wrapper
 
 
