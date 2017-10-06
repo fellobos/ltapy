@@ -154,4 +154,4 @@ class Session(object):
         install_data = instinfo.query(product=version)
         cmd = os.path.join(install_data["InstallLocation"], "lt.exe")
         proc = subprocess.Popen(cmd)
-        return Session(proc.pid, timeout, _rebuild)
+        return cls(proc.pid, timeout, _rebuild)

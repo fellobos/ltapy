@@ -10,16 +10,69 @@ database lists.
 
 import functools
 import inspect
+import logging
 import os
 import string
 import tempfile
 
+import numpy as np
 import pythoncom
 import win32com.client
+from win32com.client import constants as LTReturnCodeEnum
 
 from . import comutils
 from . import dbaccess
 from . import error
+
+log = logging.getLogger(__name__)
+log.addHandler(logging.NullHandler())
+
+# LightTools API functions that return no status code, just a single output
+# value. Also include GetStat() because the purpose of the function is to
+# return the status of the most recently executed Lighttools command. Don't
+# error check this return value!
+NO_STATUS_CODE_FUNCS = (
+    "Coord2",
+    "Coord3",
+    "GetServerID",
+    "GetStat",
+    "Str",
+    "WasInterrupted",
+)
+
+# LightTools API functions where the return values come in swapped order.
+SWAPPED_ORDER_FUNCS = (
+    "DbKeyDump",
+    "GetFreeformSurfacePoints",
+    "GetReceiverRayData",
+    "GetSplineData",
+    "GetSplineVec",
+    "GetSweptProfilePoints",
+    "QuickRayAim",
+    "QuickRayQuery",
+    "SetMeshData",
+    "SetMeshStrings",
+    "ViewKeyDump",
+)
+
+# LightTools API functions with (partly) redundant output value(s).
+REDUNDANT_OUTPUT_FUNCS = (
+    "GetMeshData",
+    "GetMeshStrings",
+    "SetMeshData",
+    "SetMeshStrings",
+)
+
+# LightTools API functions with an array-like output value.
+ARRAY_OUTPUT_FUNCS = (
+    "GetFreeformSurfacePoints",
+    "GetMeshData",
+    "GetMeshStrings",
+    "GetReceiverRayData",
+    "GetSplineData",
+    "GetSplineVec",
+    "GetSweptProfilePoints",
+)
 
 
 def LTAPI(comobj, rebuild=False):
@@ -49,6 +102,7 @@ def LTAPI(comobj, rebuild=False):
     enable_exceptions(ltapi)
     improve_dblist_interface(ltapi)
     fix_dbkeydump_argspec(ltapi)
+    fix_viewkeydump_argspec(ltapi)
 
     return ltapi
 
@@ -141,10 +195,76 @@ def catch_return_value(func):
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-        ltapi = args[0]
-        return error.raise_exception_on_error(ltapi, func.__name__, result)
+        return_value = func(*args, **kwargs)
+        ltapi, *args = args
+        func_name = func.__name__
+        msg = "Calling LTAPI function {}, args={}, kwargs={}, retval={}"
+        log.debug(msg.format(repr(func_name), args, kwargs, return_value))
+        return process_return_value(ltapi, func_name, return_value)
     return wrapper
+
+
+def process_return_value(ltapi, func_name, return_value):
+    """
+    Process the return value(s) from a Lighttools API function call.
+
+    Args:
+        ltapi (ILTAPIx): Handle to the LightTools session.
+        func_name (str): Name of the LightTools API function.
+        return_value (scalar or tuple): Return value(s) of unprocessed
+            LightTools API function call.
+
+    Returns:
+        The processed output value of the LightTools API function.
+
+    Raises:
+        APIError: If the LightTools API function call returns with a nonzero
+            status code.
+    """
+    status = None
+    out = None
+    unexpected = False
+
+    if func_name in NO_STATUS_CODE_FUNCS:
+        status = None
+        out = return_value
+    elif isinstance(return_value, int):
+        status = return_value
+        out = None
+    elif isinstance(return_value, tuple):
+        if len(return_value) == 2:
+            if func_name in SWAPPED_ORDER_FUNCS:
+                status, out = return_value
+            else:
+                out, status = return_value
+            if func_name in REDUNDANT_OUTPUT_FUNCS:
+                out = None
+        elif len(return_value) == 3:
+            if func_name in SWAPPED_ORDER_FUNCS:
+                *out, status = return_value
+            else:
+                status, *out = return_value
+            if func_name in REDUNDANT_OUTPUT_FUNCS:
+                out = out[0]
+        else:
+            unexpected = True
+    else:
+        unexpected = True
+
+    if unexpected:
+        msg = "Unexpected return value from LTAPI function {}: {}"
+        raise ValueError(msg.format(repr(func_name), return_value))
+
+    if func_name in ARRAY_OUTPUT_FUNCS:
+        out = np.array(out)
+
+    msg = "Processing return value of LTAPI function {}, status={}, out={}"
+    log.debug(msg.format(repr(func_name), status, out))
+
+    if status and status != LTReturnCodeEnum.ltStatusSuccessInternal:
+        raise error.APIError(ltapi, status)
+
+    return out
 
 
 def improve_dblist_interface(ltapi):
@@ -227,3 +347,51 @@ def fix_dbkeydump_argspec(ltapi):
 
     DbKeyDump.__doc__ = doc
     setattr(ltapi.__class__, "DbKeyDump", DbKeyDump)
+
+
+def fix_viewkeydump_argspec(ltapi):
+    """
+    Fix a bug in the argspec of the DbKeyDump API method.
+
+    The optional parameter fileName has a wrong default value of "0".
+    If fileName is not specified, the list of data values is written
+    to a file with name "0", instead of being printed to the LightTools
+    console window.
+
+    Replace the original DbKeyDump API method with a wrapper function that
+    provides a correct default value for the fileName parameter.
+    As additional feature, printed output also goes to the Python console
+    window.
+
+    Args:
+        ltapi (ILTAPIx): A handle to the LightTools session.
+
+    Notes:
+        The original DbKeyDump API method is not overwritten and can be
+        accessed via single underscore prefix (ltapi._DbKeyDump).
+    """
+    # This function must be executed only once, to avoid that the original
+    # ltapi._DbKeyDump() function gets overwritten.
+    if hasattr(ltapi, "_ViewKeyDump"):
+        return
+
+    doc = ltapi.ViewKeyDump.__func__.__doc__
+    setattr(ltapi.__class__, "_ViewKeyDump", ltapi.ViewKeyDump)
+
+    def ViewKeyDump(self, viewKey=pythoncom.Empty, fileName=pythoncom.Empty):
+        """
+        Call the original ViewKeyDump API method with correct parameter
+        values and print data values also to the Python console window.
+        """
+        print_to_console = (fileName == pythoncom.Empty)
+        if print_to_console:
+            with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
+                ltapi._ViewKeyDump(viewKey, f.name)
+                f.seek(0)
+                print(f.read())
+            os.remove(f.name)
+            fileName = ""
+        return ltapi._ViewKeyDump(viewKey, fileName)
+
+    ViewKeyDump.__doc__ = doc
+    setattr(ltapi.__class__, "ViewKeyDump", ViewKeyDump)
