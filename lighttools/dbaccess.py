@@ -4,9 +4,9 @@ import string
 import tempfile
 
 import pandas as pd
-from win32com.client import constants
+from win32com.client import constants as LTReturnCodeEnum
 
-from . import error
+import lighttools.error
 
 
 class DbKey(str):
@@ -153,71 +153,82 @@ class DbList(str):
     """
 
     def __new__(cls, ltapi, datakey, filter_):
-        listkey = ltapi._DbList(datakey, filter_)
-        return str.__new__(cls, listkey)
+        # Objects of type str are immutable. Their value cannot be
+        # initialized (as usual) in the __init__ method. Because the value
+        # of listkey is not known before object creation the __new__ method
+        # of str must be overriden.
+        listkey = ltapi._DbList(dataKey=datakey, filter=filter_)
+        return super().__new__(cls, listkey)
 
     def __init__(self, ltapi, datakey, filter_):
-        self._ltapi = ltapi
-        self._datakey = datakey
-        self._filter = filter_
+        self.ltapi = ltapi
+        self.datakey = datakey
+        self.filter = filter_
 
-    def __repr__(self):
-        s = "{}\n".format(self.__class__)
-        s += "Data key: {}\n".format(self._datakey.upper())
-        s += "Filter:   {}\n".format(self._filter.upper())
-        size = self._ltapi.ListSize(self)
-        s += "List key: {}, {} items, {} to {}\n".format(self, size, 0, size-1)
-        s += "List items:\n"
+    def __del__(self):
+        self.ltapi.ListDelete(listKey=self)
+
+    def show(self):
+        """
+        Show the contents of the database list.
+        """
+        s = "Data key:   {}\n".format(self.datakey)
+        s += "Filter:     {}\n".format(self.filter)
+        size = self.ltapi.ListSize(self)
+        s += "List key:   {}\n".format(self)
+        s += "List items: {} items, {} to {}\n".format(size, 0, size-1)
         for i, key in enumerate(self):
-            name = self._ltapi.DbGet(key, "NAME")
+            name = self.ltapi.DbGet(key, "NAME")
             s += "{:<4}  {:<10s}  {}\n".format(i, key, name)
-        return s
+        print(s)
+
+    def __len__(self):
+        return self.ltapi.ListSize(listKey=self)
 
     def __getitem__(self, key):
         if isinstance(key, str):
-            return self._ltapi.ListByName(self, key)
+            return self.ltapi.ListByName(listKey=self, dataName=key)
         elif isinstance(key, int):
             if key < 0:
-                key += self._ltapi.ListSize(self)
-            return self._ltapi.ListAtPos(self, key+1)
+                key += self.ltapi.ListSize(listKey=self)
+            return self.ltapi.ListAtPos(listKey=self, positionOfList=key+1)
         elif isinstance(key, slice):
-            size = self._ltapi.ListSize(self)
-            items = [self._ltapi.ListAtPos(self, i+1) for i in range(size)]
+            size = self.ltapi.ListSize(listKey=self)
+            items = [
+                self.ltapi.ListAtPos(listKey=self, positionOfList=i+1)
+                for i in range(size)
+            ]
             return items[key]
         else:
-            msg = "{} indices must be integers, slices or str, not {!r}."
-            raise TypeError(msg.format(self.__class__.__name__, type(key)))
-
-    def __len__(self):
-        return self._ltapi.ListSize(self)
+            msg = "{} indices must be integer, slice or str, not {}."
+            name = self.__class__.__name__
+            raise TypeError(msg.format(name, repr(type(key))))
 
     def __iter__(self):
         try:
-            self._ltapi.ListSetPos(self, 1)
-        except error.APIError as e:
-            if e.error_code == constants.ltStatusListIsEmpty:
+            self.ltapi.ListSetPos(listKey=self, positionOfList=1)
+        except lighttools.error.APIError as e:
+            if (e.status == LTReturnCodeEnum.ltStatusListIsEmpty
+                or e.status == LTReturnCodeEnum.ltStatusInvalidListPosition):
                 pass
             else:
                 raise
         return self
 
-    def __next__(self):
+    def __contains__(self, item):
         try:
-            return self._ltapi.ListNext(self)
-        except error.APIError as e:
-            if (e.error_code == constants.ltStatusListIsEmpty
-                or e.error_code == constants.ltStatusEndOfList):
-                raise StopIteration
-            else:
-                raise
-
-    def __del__(self):
-        self._ltapi.ListDelete(self)
-
-    def __contains__(self, key):
-        try:
-            datakey = self._ltapi.ListByName(self, key)
-        except error.APIError:
+            datakey = self.ltapi.ListByName(listKey=self, dataName=item)
+        except lighttools.error.APIError:
             return False
         else:
             return True
+
+    def __next__(self):
+        try:
+            return self.ltapi.ListNext(listKey=self)
+        except lighttools.error.APIError as e:
+            if (e.status == LTReturnCodeEnum.ltStatusListIsEmpty
+                or e.status == LTReturnCodeEnum.ltStatusEndOfList):
+                raise StopIteration
+            else:
+                raise
