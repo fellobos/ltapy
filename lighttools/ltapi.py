@@ -21,8 +21,9 @@ import win32com.client
 from win32com.client import constants as LTReturnCodeEnum
 
 from . import comutils
-from . import dbaccess
+# from . import dbaccess
 from . import error
+import lighttools.dbaccess
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
@@ -285,17 +286,24 @@ def improve_dblist_interface(ltapi):
     if hasattr(ltapi, "_DbList"):
         return
 
-    doc = ltapi.DbList.__func__.__doc__
-    setattr(ltapi.__class__, "_DbList", ltapi.DbList)
+    # Hard to detect error happened in pytest when switching bewteen two
+    # LightTools processes during one Python session.
+    # - First error was that ltapi (instead of self) was handed to the wrapper
+    # fucntion.
+    # - Second error was that the class method (instead of the corresponding
+    # function object) was hidden under the prefixed name.
 
-    def DbList(self, key=pythoncom.Empty, filter=pythoncom.Empty, status=0):
+    doc = ltapi.DbList.__func__.__doc__
+    setattr(ltapi.__class__, "_DbList", ltapi.DbList.__func__)
+
+    def DbList(self, dataKey=pythoncom.Empty, filter=pythoncom.Empty, status=0):
         """
         Return an enhanced DbList object.
 
         This ia a wrapper function that returns an enhanced DbList object and
         mimics the call syntax (ArgSpec) of the original DbList function.
         """
-        return dbaccess.DbList(self, key, filter)
+        return lighttools.dbaccess.DbList(self, dataKey, filter)
 
     DbList.__doc__ = doc
     setattr(ltapi.__class__, "DbList", DbList)
@@ -328,7 +336,7 @@ def fix_dbkeydump_argspec(ltapi):
         return
 
     doc = ltapi.DbKeyDump.__func__.__doc__
-    setattr(ltapi.__class__, "_DbKeyDump", ltapi.DbKeyDump)
+    setattr(ltapi.__class__, "_DbKeyDump", ltapi.DbKeyDump.__func__)  # must be __func__
 
     def DbKeyDump(self, dataKey=pythoncom.Empty, fileName=pythoncom.Empty):
         """
@@ -338,12 +346,12 @@ def fix_dbkeydump_argspec(ltapi):
         print_to_console = (fileName == pythoncom.Empty)
         if print_to_console:
             with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
-                ltapi._DbKeyDump(dataKey, f.name)
+                self._DbKeyDump(dataKey, f.name)
                 f.seek(0)
                 print(f.read())
             os.remove(f.name)
             fileName = ""
-        return ltapi._DbKeyDump(dataKey, fileName)
+        return self._DbKeyDump(dataKey, fileName)
 
     DbKeyDump.__doc__ = doc
     setattr(ltapi.__class__, "DbKeyDump", DbKeyDump)
@@ -376,7 +384,7 @@ def fix_viewkeydump_argspec(ltapi):
         return
 
     doc = ltapi.ViewKeyDump.__func__.__doc__
-    setattr(ltapi.__class__, "_ViewKeyDump", ltapi.ViewKeyDump)
+    setattr(ltapi.__class__, "_ViewKeyDump", ltapi.ViewKeyDump.__func__)
 
     def ViewKeyDump(self, viewKey=pythoncom.Empty, fileName=pythoncom.Empty):
         """
@@ -386,12 +394,12 @@ def fix_viewkeydump_argspec(ltapi):
         print_to_console = (fileName == pythoncom.Empty)
         if print_to_console:
             with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
-                ltapi._ViewKeyDump(viewKey, f.name)
+                self._ViewKeyDump(viewKey, f.name)
                 f.seek(0)
                 print(f.read())
             os.remove(f.name)
             fileName = ""
-        return ltapi._ViewKeyDump(viewKey, fileName)
+        return self._ViewKeyDump(viewKey, fileName)
 
     ViewKeyDump.__doc__ = doc
     setattr(ltapi.__class__, "ViewKeyDump", ViewKeyDump)
