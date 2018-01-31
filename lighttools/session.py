@@ -12,7 +12,6 @@ import psutil
 from . import _comutils
 from . import config
 from . import error
-from . import jslib
 from . import _ltapi
 
 
@@ -79,7 +78,6 @@ class Session(object):
     Attributes:
         ltapi (ILTAPIx): A handle to the LightTools session.
         pid (int): The PID of the LightTools process.
-        jslib (JSNET): A handle to the JumpStart macro function library.
 
     Raises:
         TimeOutError: If a connection attempt with LightTools was aborted
@@ -115,9 +113,6 @@ class Session(object):
         # arbitrary LightTools session.
         if not self.pid:
             self.pid = self.ltapi.GetServerID()
-
-        # Get a handle to the JumpStart macro function library.
-        self.jslib = jslib.JSLIB("LTCOM64.JSNET", self._rebuild)
 
     def _get_COM_object(self):
         """
