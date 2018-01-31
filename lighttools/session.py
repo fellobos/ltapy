@@ -5,15 +5,47 @@ Manage the connection to a LightTools session.
 import os
 import subprocess
 import time
+import winreg
 
 import psutil
 
 from . import comutils
 from . import config
 from . import error
-from . import instinfo
 from . import jslib
 from . import ltapi
+
+
+def _get_lt_home(version):
+    """
+    Return the LightTools home directory.
+
+    Get the home directory of the specified LightTools `version` from the
+    Windows registry. The requested LightTools `version` must be installed
+    on the system.
+
+    Args:
+        version (str): The LightTools version string, e.g. "8.5.0".
+
+    Returns:
+        str: The LightTools home directory.
+    """
+    try:
+        hkey = winreg.OpenKeyEx(
+            key=winreg.HKEY_LOCAL_MACHINE,
+            sub_key="SOFTWARE\\Optical Research Associates\\LightTools\\{}\\Environment".format(
+                version
+            ),
+        )
+    except OSError:
+        msg = (
+            "Couldn't find home directory of LighTools version {!r}. Please "
+            "check if the requested LightTools version is installed."
+        )
+        raise ValueError(msg.format(version))
+    else:
+        value, __ = winreg.QueryValueEx(hkey, "LT_HOME")
+        return value
 
 
 class Session(object):
@@ -122,36 +154,29 @@ class Session(object):
             raise error.TimeOutError(msg.format(self._timeout))
 
     @classmethod
-    def new(cls, version=config.VERSION, timeout=config.TIMEOUT,
-            _rebuild=False):
+    def new(cls, version=config.VERSION, timeout=config.TIMEOUT, _rebuild=False):
         """
-        Start a new LightTools instance and connect to that session.
+        Start a new instance of LightTools and connect to that session.
 
         Args:
-            version (str, optional): The display name of the LightTools
-                version that should be started. The lts.installed_versions()
-                function returns a list of valid display names.
-            timeout (int, optional): The time limit in seconds after which a
+            version (str, optional): The LightTools version to be started.
+            timeout (int, optional): Time limit in seconds after which the
                 connection attempt to LightTools is aborted.
 
         Returns:
-            Session: A session object connected with the new LightTools
-                instance.
+            Session: A session object, connected with the newly created
+                LightTools instance.
 
         Raises:
             TimeOutError: If a connection attempt with LightTools was aborted
                 due to timeout.
 
         Examples:
-            Start a new LightTools session (64-bit, version=8.4.0) and connect
-            to that session:
+            Start a new LightTools instance and connect to that session:
 
-        >>> lts.installed_versions()
-        ['LightTools(64) 8.3.2', 'LightTools(64) 8.4.0']
-        >>> ses = lts.Session.new(version="LightTools(64) 8.4.0")
+        >>> ses = Session.new(version="8.5.0")
         >>> lt = ses.ltapi
         """
-        install_data = instinfo.query(product=version)
-        cmd = os.path.join(install_data["InstallLocation"], "lt.exe")
-        proc = subprocess.Popen(cmd)
+        lt_home = _get_lt_home(version)
+        proc = subprocess.Popen(os.path.join(lt_home, "lt.exe"))
         return cls(proc.pid, timeout, _rebuild)
