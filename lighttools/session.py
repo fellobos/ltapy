@@ -9,11 +9,11 @@ import winreg
 
 import psutil
 
-from . import comutils
+from . import _comutils
 from . import config
 from . import error
 from . import jslib
-from . import ltapi
+from . import _ltapi
 
 
 def _get_lt_home(version):
@@ -109,7 +109,7 @@ class Session(object):
 
         # Get a handle to the LightTools session.
         comobj = self._get_COM_object()
-        self.ltapi = ltapi.LTAPI(comobj, self._rebuild)
+        self.ltapi = _ltapi.LTAPI(comobj, self._rebuild)
 
         # Set the process ID if the connection was established with an
         # arbitrary LightTools session.
@@ -141,7 +141,7 @@ class Session(object):
             lambda current_time: current_time - start_time > self._timeout
         )
 
-        rot = comutils.RunningObjectTable()
+        rot = _comutils.RunningObjectTable()
 
         while not connection_attempt_timed_out(time.time()):
             comobjs = rot.get_objects()

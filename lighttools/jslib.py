@@ -8,7 +8,7 @@ import inspect
 import pythoncom
 import win32com.client
 
-from . import comutils
+from . import _comutils
 
 
 def JSLIB(progid, rebuild=False):
@@ -69,18 +69,18 @@ def ensure_makepy_support(progid, rebuild=False):
     # Only generate the support files and load the module if explicitly
     # required (rebuild=True) or if the JumpStart library object is a
     # late-bound (dynamic dispatch) COM object.
-    if rebuild or comutils.is_dynamic_dispatch(idispatch):
+    if rebuild or _comutils.is_dynamic_dispatch(idispatch):
         try:
-            comutils.generate_typelib_support(idispatch)
+            _comutils.generate_typelib_support(idispatch)
         except NameError:
             # Fix "name 'nan' is not defined" NameError exception and add the
             # module to the cache.
-            srcfile = comutils.get_generated_filepath(idispatch)
+            srcfile = _comutils.get_generated_filepath(idispatch)
             with open(srcfile, "r+") as f:
                 data = f.read()
                 f.seek(0)
                 f.write(data.replace("=nan", "=defaultNamedNotOptArg"))
-            typelib = comutils.get_typelib(idispatch)
+            typelib = _comutils.get_typelib(idispatch)
             clsid, lcid, _, major, minor, _ = typelib.GetLibAttr()
             win32com.client.gencache.AddModuleToCache(
                 clsid, lcid, major, minor
