@@ -1,20 +1,19 @@
-"""
-A COM client object for the JumpStart macro function library.
-"""
+# -*- coding: utf-8 -*-
 
-import functools
-import inspect
+"""
+Provide access to the JumpStart macro function library.
+"""
 
 import pythoncom
 import win32com.client
 
 from . import _comutils
+from . import config
 
 
-def JSLIB(progid, rebuild=False):
+def _JSLIB(progid=config.JSLIB, rebuild=False):
     """
-    Create a COM client object for the JumpStart macro function library
-    that uses early-bound automation.
+    Create a COM client object for the JumpStart macro function library.
 
     Args:
         progid (str): The ProgID for the JumpStart COM object.
@@ -25,7 +24,7 @@ def JSLIB(progid, rebuild=False):
         jslib (JSNET): A handle to the JumpStart macro function library.
     """
     # Make sure that MakePy support is available for the object.
-    ensure_makepy_support(progid, rebuild)
+    _ensure_makepy_support(progid, rebuild)
 
     # Create an early-bound JumpStart COM client object.
     jslib = win32com.client.Dispatch(progid)
@@ -33,10 +32,9 @@ def JSLIB(progid, rebuild=False):
     return jslib
 
 
-def ensure_makepy_support(progid, rebuild=False):
+def _ensure_makepy_support(progid, rebuild=False):
     """
-    Ensure that MakePy support exists for the COM object identified by the
-    given ProgID.
+    Ensure that MakePy support exists for specified COM object.
 
     Args:
         progid (str): The ProgID for the JumpStart COM object.
@@ -85,3 +83,7 @@ def ensure_makepy_support(progid, rebuild=False):
             win32com.client.gencache.AddModuleToCache(
                 clsid, lcid, major, minor
             )
+
+
+#: Global, single instance of the JumpStart macro function library.
+js = _JSLIB(rebuild=True)

@@ -4,6 +4,9 @@ VERSION = "8.5.0"
 # Timeout for a connection attempt to LightTools.
 TIMEOUT = 60
 
+# Default version of JumpStart macro library
+JSLIB = "LTCOM64.JSNET"
+
 # Default logging configuration for LightTools.
 LOGGING = {
     "version": 1,
