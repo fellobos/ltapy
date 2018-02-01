@@ -52,18 +52,20 @@ class RunningObjectTable(object):
     def __init__(self):
         self.rot = pythoncom.GetRunningObjectTable()
 
-    def show(self):
+    def __repr__(self):
         """
-        Show the contents of the running object table.
+        Return the contents of the Running Object Table.
 
-        Prints the moniker names of all currently running COM objects.
+        Returns:
+            str: The moniker names of all objects currently found in the
+                Running Object Table.
         """
         moniker_names = []
         for moniker in self.rot:
-            moniker_names.append(self.get_moniker_name(moniker))
-        print("\n".join(moniker_names))
+            moniker_names.append(self._get_moniker_name(moniker))
+        return "\n".join(moniker_names)
 
-    def get_moniker_name(self, moniker):
+    def _get_moniker_name(self, moniker):
         """
         Return the display name of the given moniker.
 
@@ -91,11 +93,11 @@ class RunningObjectTable(object):
                 be found.
         """
         for moniker in self.rot:
-            moniker_name = self.get_moniker_name(moniker)
+            moniker_name = self._get_moniker_name(moniker)
             if name == moniker_name:
                 return self.rot.GetObject(moniker)
         else:
-            msg = "Could not find COM object with moniker name {!r}."
+            msg = "Couldn't find COM object with moniker name {!r}."
             raise ValueError(msg.format(name))
 
     def get_objects(self):
@@ -111,14 +113,17 @@ class RunningObjectTable(object):
         """
         objs = {}
         for moniker in self.rot:
-            moniker_name = self.get_moniker_name(moniker)
-            # There is a chance that the object (identified by moniker) is not
-            # alive any more!
+            moniker_name = self._get_moniker_name(moniker)
+            # A race condition might occur if a COM application is closed
+            # while the Running Object Table is scanned. There is therefore
+            # a chance that the object identified by moniker is not alive
+            # any more.
             try:
                 obj = self.rot.GetObject(moniker)
             except pythoncom.com_error:
                 continue
-            objs[moniker_name] = obj
+            else:
+                objs[moniker_name] = obj
         return objs
 
 
