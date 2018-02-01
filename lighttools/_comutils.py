@@ -1,22 +1,25 @@
+# -*- coding: utf-8 -*-
+
 """
 Utility methods for client-side COM support.
 
-COM client support is the ability to manipulate COM server objects via
-their exposed interface. Automation objects (e.g. LightTools) are COM
-server objects that expose their methods and properties using the
-IDispatch interface. This interface enables them to be accessed by
-automation clients, such as Visual Basic or Python.
+The `RunningObjectTable` class simplifies the access to the Running
+Object Table (ROT) and to the COM objects that are registered there.
+Furthermore, this module defines a few helper functions to support
+early-bound automation for IDispatch based COM objects.
 
-All COM server objects that are currently running on the computer are
-registered in the running object table (ROT). The ROT is a globally
-accessible look-up table that keeps track of those objects. The
-LightTools API also uses the Microsoft Windows COM interface and
-registers its objects with the ROT.
+Notes:
+    COM client support is the ability to manipulate COM server objects
+    via their exposed interface.  Automation objects (e.g. LightTools)
+    are COM server objects that expose their methods and properties
+    using the IDispatch interface.  This interface enables them to be
+    accessed by automation clients, such as Visual Basic or Python.
 
-The `RunningObjectTable` class provides easy access to the ROT and to
-the COM objects that are registered there. Furthermore, this module
-defines a few helper functions in order to support early-bound
-automation for IDispatch based COM objects.
+    All COM server objects that are currently running on the computer
+    are registered in the ROT.  The ROT is a globally accessible
+    look-up table that keeps track of those objects.  The LightTools
+    API also uses the Microsoft Windows COM interface and registers its
+    objects in the ROT.
 """
 
 import os
@@ -28,14 +31,13 @@ import win32com.client
 class RunningObjectTable(object):
 
     """
-    Provide access to COM objects that are registered in the running
-    object table (ROT).
+    Provide access to COM objects listed in the Running Object Table.
 
     Examples:
-        Show the contents of the running object table:
+        Show the contents of the Running Object Table:
 
         >>> rot = RunningObjectTable()
-        >>> rot.show()
+        >>> print(rot)
         LightTools API Server | 1912
         LightTools API Server | 6940
         !{0006F03A-0000-0000-C000-000000000046}
@@ -52,58 +54,57 @@ class RunningObjectTable(object):
     def __init__(self):
         self.rot = pythoncom.GetRunningObjectTable()
 
-    def show(self):
+    def __repr__(self):
         """
-        Show the contents of the running object table.
+        Return the contents of the Running Object Table.
 
-        Prints the moniker names of all currently running COM objects.
+        Returns:
+            str: The moniker names of all objects currently found in the
+                Running Object Table.
         """
         moniker_names = []
         for moniker in self.rot:
-            moniker_names.append(self.get_moniker_name(moniker))
-        print("\n".join(moniker_names))
+            moniker_names.append(self._get_moniker_name(moniker))
+        return "\n".join(moniker_names)
 
-    def get_moniker_name(self, moniker):
+    def _get_moniker_name(self, moniker):
         """
         Return the display name of the given moniker.
 
         Args:
-            moniker (PyIMoniker): The moniker identifying the COM object.
+            moniker (PyIMoniker): The `moniker` identifying the COM object.
 
         Returns:
-            str: The display name of the moniker.
+            str: The display name of the `moniker`.
         """
         return moniker.GetDisplayName(pythoncom.CreateBindCtx(0), None)
 
     def get_object(self, name):
         """
-        Return a COM object from the running object table.
+        Return a COM object from the Running Object Table.
 
         Args:
-            name (str): The display name of the moniker that identifies
+            name (str): The display `name` of the moniker that identifies
                 the requested COM object.
 
         Returns:
             PyIUnknown: The requested COM object.
 
         Raises:
-            ValueError: If a COM object with the given moniker name could not
-                be found.
+            ValueError: If a COM object with the given moniker `name` could
+                not be found.
         """
         for moniker in self.rot:
-            moniker_name = self.get_moniker_name(moniker)
+            moniker_name = self._get_moniker_name(moniker)
             if name == moniker_name:
                 return self.rot.GetObject(moniker)
         else:
-            msg = "Could not find COM object with moniker name {!r}."
+            msg = "Couldn't find COM object with moniker name {!r}."
             raise ValueError(msg.format(name))
 
     def get_objects(self):
         """
-        Return all COM objects from the running object table.
-
-        Args:
-            None
+        Return all COM objects from the Running Object Table.
 
         Returns:
             dict: A mapping that contains all running COM objects as
@@ -111,14 +112,17 @@ class RunningObjectTable(object):
         """
         objs = {}
         for moniker in self.rot:
-            moniker_name = self.get_moniker_name(moniker)
-            # There is a chance that the object (identified by moniker) is not
-            # alive any more!
+            moniker_name = self._get_moniker_name(moniker)
+            # A race condition might occur if a COM application is closed
+            # while the Running Object Table is scanned.  There is therefore
+            # a chance that the object identified by moniker is not alive
+            # any more.
             try:
                 obj = self.rot.GetObject(moniker)
             except pythoncom.com_error:
                 continue
-            objs[moniker_name] = obj
+            else:
+                objs[moniker_name] = obj
         return objs
 
 
