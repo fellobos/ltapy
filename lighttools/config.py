@@ -1,5 +1,5 @@
 # Default LightTools version.
-VERSION = "LightTools(64) 8.5.0"
+VERSION = "8.5.0"
 
 # Timeout for a connection attempt to LightTools.
 TIMEOUT = 60

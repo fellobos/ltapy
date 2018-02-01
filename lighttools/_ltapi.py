@@ -20,10 +20,9 @@ import pythoncom
 import win32com.client
 from win32com.client import constants as LTReturnCodeEnum
 
-from . import comutils
-# from . import dbaccess
+from . import _comutils
 from . import error
-import lighttools.dbaccess
+from . import _dbaccess
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
@@ -118,8 +117,8 @@ def ensure_makepy_support(idispatch, rebuild=False):
         rebuild (bool): Wether to regenerate the Python source code
             (makepy support) for the corresponding COM type library.
     """
-    if rebuild or comutils.is_dynamic_dispatch(idispatch):
-        comutils.generate_typelib_support(idispatch)
+    if rebuild or _comutils.is_dynamic_dispatch(idispatch):
+        _comutils.generate_typelib_support(idispatch)
 
 
 def enable_exceptions(ltapi):
@@ -303,7 +302,7 @@ def improve_dblist_interface(ltapi):
         This ia a wrapper function that returns an enhanced DbList object and
         mimics the call syntax (ArgSpec) of the original DbList function.
         """
-        return lighttools.dbaccess.DbList(self, dataKey, filter)
+        return _dbaccess.DbList(self, dataKey, filter)
 
     DbList.__doc__ = doc
     setattr(ltapi.__class__, "DbList", DbList)

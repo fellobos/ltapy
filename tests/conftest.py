@@ -36,7 +36,7 @@ def setup(request):
     else:
         ses = lighttools.session.Session.new()
 
-    return ses.ltapi, interactive
+    return ses.lt, interactive
 
 
 def pytest_addoption(parser):
