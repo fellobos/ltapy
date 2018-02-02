@@ -8,16 +8,16 @@ import lighttools.error
 import lighttools.utils
 
 FILENAME = "ltapi.lts"
-PRECISION = 1e-06
+PRECISION = 1e-6
 
 
 class TestGeneralUtilityFunctions:
 
     def test_command_processor(self, lt):
-        assert lt.Cmd("wireframe") is None
+        assert lt.Cmd("Wireframe") is None
         with pytest.raises(lighttools.error.APIError):
-            lt.Cmd("wireframe")
-        lt.Cmd("solid")
+            lt.Cmd("Wireframe")
+        lt.Cmd("Solid")
 
     def test_console_message_(self, lt):
         assert lt.Message("This is a test message.") is None
@@ -61,11 +61,11 @@ class TestGeneralUtilityFunctions:
 
     def test_status_info(self, lt):
         assert isinstance(lt.GetLastMsg(1), str)
-        lt.Cmd("translucent")
-        lt.Cmd("solid")
+        lt.Cmd("Translucent")
+        lt.Cmd("Solid")
         assert lt.GetStat() == 0
         with pytest.raises(lighttools.error.APIError):
-            lt.Cmd("solid")
+            lt.Cmd("Solid")
         assert lt.GetStat() == 72
         assert isinstance(lt.GetStatusString(0), str)
 
@@ -75,9 +75,9 @@ class TestGeneralUtilityFunctions:
         assert lt.Str("XYZ 0,0,1") == '"XYZ 0,0,1"'
 
     def test_user_defined_variable(self, lt):
-        assert lt.SetVar("pi", 3.14) is None
-        assert lt.GetVar("pi") == 3.14
-        assert lt.CheckVar("pi") == 2
+        assert lt.SetVar("PI", 3.14) is None
+        assert lt.GetVar("PI") == 3.14
+        assert lt.CheckVar("PI") == 2
 
     def test_view_manipulation(self, lt):
         assert lt.SetActiveView("3D") is None
@@ -87,23 +87,23 @@ class TestGeneralUtilityFunctions:
 class TestDataAccessFunctions:
 
     def test_database_access(self, lt):
-        sphkey = "lens_manager[1].components[components].solid[sphere_1]"
+        sphkey = "LENS_MANAGER[1].COMPONENTS[Components].SOLID[Sphere_1]"
         prmkey = (
-            "lens_manager[1].components[components].solid[extrudedpolygon_5]"
-            ".extrusion_primitive[extrusionprimitive_4]"
+            "LENS_MANAGER[1].COMPONENTS[Components].SOLID[ExtrudedPolygon_5]"
+            ".EXTRUSION_PRIMITIVE[ExtrusionPrimitive_4]"
         )
-        assert lt.DbSet(sphkey, "x", 2) is None
-        assert lt.DbGet(sphkey, "x") == 2
-        assert lt.DbSet(prmkey, "vertex_x_at", -3.14, i=2) is None
-        assert lt.DbGet(prmkey, "vertex_x_at", None, i=2) == -3.14
+        assert lt.DbSet(sphkey, "X", 2) is None
+        assert lt.DbGet(sphkey, "X") == 2
+        assert lt.DbSet(prmkey, "Vertex_X_At", -3.14, i=2) is None
+        assert lt.DbGet(prmkey, "Vertex_X_At", None, i=2) == -3.14
         with pytest.raises(lighttools.error.APIError):
-            lt.DbGet(sphkey, "xx")
+            lt.DbGet(sphkey, "XX")
         with pytest.raises(lighttools.error.APIError):
-            lt.DbSet(sphkey, "xx", 4)
+            lt.DbSet(sphkey, "XX", 4)
 
     def test_database_list(self, lt):
-        compkey = "lens_manager[1].components[components]"
-        solids = lt._DbList(compkey, "solid")
+        compkey = "LENS_MANAGER[1].COMPONENTS[Components]"
+        solids = lt._DbList(compkey, "SOLID")
         assert isinstance(solids, str)
         assert isinstance(lt.ListAtPos(solids, 1), str)
 
@@ -119,11 +119,11 @@ class TestDataAccessFunctions:
         assert size == numsolids
 
         # Reset list pointer.
-        solids = lt._DbList(compkey, "solid")
+        solids = lt._DbList(compkey, "SOLID")
 
         with pytest.raises(lighttools.error.APIError):
             lt.ListAtPos(solids, size+1)
-        assert isinstance(lt.ListByName(solids, "sphere_1"), str)
+        assert isinstance(lt.ListByName(solids, "Sphere_1"), str)
         assert lt.ListGetPos(solids) == 1
         assert isinstance(lt.ListNext(solids), str)
         with pytest.raises(lighttools.error.APIError):
@@ -133,39 +133,39 @@ class TestDataAccessFunctions:
         assert lt.ListDelete(solids) is None
 
     def test_database_key(self, lt):
-        sphkey = "lens_manager[1].components[components].solid[sphere_1]"
+        sphkey = "LENS_MANAGER[1].COMPONENTS[Components].SOLID[Sphere_1]"
         assert isinstance(lt.DbKeyDump(sphkey), str)
 
-        compkey = "lens_manager[1].components[components]"
-        solids = lt._DbList(compkey, "solid")
-        assert "sphere_1" in lt.DbKeyStr(lt.ListAtPos(solids, 1)).lower()
+        compkey = "LENS_MANAGER[1].COMPONENTS[Components]"
+        solids = lt._DbList(compkey, "SOLID")
+        assert "Sphere_1" in lt.DbKeyStr(lt.ListAtPos(solids, 1))
 
     def test_database_type(self, lt):
-        sphkey = "lens_manager[1].components[components].solid[sphere_1]"
-        assert lt.DbType(sphkey, "solid") == 1
-        assert lt.DbType(sphkey, "receiver") == 0
+        sphkey = "LENS_MANAGER[1].COMPONENTS[Components].SOLID[Sphere_1]"
+        assert lt.DbType(sphkey, "SOLID") == 1
+        assert lt.DbType(sphkey, "RECEIVER") == 0
 
     def test_mesh_data(self, lt):
         mshkey = (
-            "lens_manager[1].illum_manager[illumination_manager]"
-            ".receivers[receiver_list].farfield_receiver[farfieldreceiver_2]"
-            ".forward_sim_function[forward_simulation]"
-            ".intensity_mesh[intensity_mesh]"
+            "LENS_MANAGER[1].ILLUM_MANAGER[Illumination_Manager]"
+            ".RECEIVERS[Receiver_List].FARFIELD_RECEIVER[farFieldReceiver_2]"
+            ".FORWARD_SIM_FUNCTION[Forward_Simulation]"
+            ".INTENSITY_MESH[Intensity_Mesh]"
         )
         mmfkey = (
-            "lens_manager[1].opt_manager[optimization_manager]"
-            ".opt_meritfunctions[merit_function]"
-            ".opt_meshmeritfunction[intensity_mesh]"
+            "LENS_MANAGER[1].OPT_MANAGER[Optimization_Manager]"
+            ".OPT_MERITFUNCTIONS[Merit_Function]"
+            ".OPT_MESHMERITFUNCTION[Intensity_Mesh]"
         )
 
-        lng = lt.DbGet(mshkey, "x_dimension")
-        lat = lt.DbGet(mshkey, "y_dimension")
+        lng = int(lt.DbGet(mshkey, "X_Dimension"))
+        lat = int(lt.DbGet(mshkey, "Y_Dimension"))
         data = lt.GetMeshData(
             meshKey=mshkey,
             dataArray=np.empty((lng, lat)).tolist(),
         )
-        assert abs(data.min() - lt.DbGet(mshkey, "min_value")) < PRECISION
-        assert abs(data.max() - lt.DbGet(mshkey, "max_value")) < PRECISION
+        assert abs(data.min() - lt.DbGet(mshkey, "Min_Value")) < PRECISION
+        assert abs(data.max() - lt.DbGet(mshkey, "Max_Value")) < PRECISION
 
         target = np.random.rand(lng, lat)
         assert lt.SetMeshData(
@@ -173,13 +173,13 @@ class TestDataAccessFunctions:
             dataArray=target.tolist(),
             numCols=lng,
             numRows=lat,
-            cellFilter="target",
+            cellFilter="Target",
         ) is None
         assert np.allclose(
             a=lt.GetMeshData(
                 meshKey=mmfkey,
                 dataArray=np.empty((lng, lat)).tolist(),
-                cellFilter="target",
+                cellFilter="Target",
             ),
             b=target,
             atol=PRECISION,
@@ -187,13 +187,13 @@ class TestDataAccessFunctions:
 
     def test_freeform_surface_points(self, lt):
         ffskey = (
-            "lens_manager[1].components[components].solid[freeformentity_7]"
-            ".freeform_primitive[freeformprimitive_1]"
-            ".freeform_surface[frontsurface]"
+            "LENS_MANAGER[1].COMPONENTS[Components].SOLID[FreeformEntity_7]"
+            ".FREEFORM_PRIMITIVE[FreeformPrimitive_1]"
+            ".FREEFORM_SURFACE[FrontSurface]"
         )
 
-        u = lt.DbGet(ffskey, "numpointsinu")
-        v = lt.DbGet(ffskey, "numpointsinv")
+        u = int(lt.DbGet(ffskey, "NumPointsInU"))
+        v = int(lt.DbGet(ffskey, "NumPointsInV"))
 
         data = lt.GetFreeformSurfacePoints(
             surfaceKey=ffskey,
@@ -220,35 +220,35 @@ class TestDataAccessFunctions:
 
     def test_mesh_strings(self, lt):
         fwskey = (
-            "lens_manager[1].illum_manager[illumination_manager]"
-            ".receivers[receiver_list].farfield_receiver[farfieldreceiver_2]"
-            ".forward_sim_function[forward_simulation]"
+            "LENS_MANAGER[1].ILLUM_MANAGER[Illumination_Manager]"
+            ".RECEIVERS[Receiver_List].FARFIELD_RECEIVER[farFieldReceiver_2]"
+            ".FORWARD_SIM_FUNCTION[Forward_Simulation]"
         )
-        lt.Cmd("beginallsimulations")
-        numpaths = lt.DbGet(fwskey, "numberofraypaths")
+        lt.Cmd("BeginAllSimulations")
+        numpaths = int(lt.DbGet(fwskey, "NumberOfRayPaths"))
         data = lt.GetMeshStrings(
             meshKey=fwskey,
             stringArray=np.empty((1, numpaths), dtype=np.str).tolist(),
-            cellFilter="raypathstringat",
+            cellFilter="RayPathStringAt",
         )
         assert "pointSource_3" in data[0,0]
 
         assert lt.SetMeshStrings(
             meshKey=fwskey,
-            stringArray=np.random.choice(["yes", "no"], numpaths).tolist(),
+            stringArray=np.random.choice(["Yes", "No"], numpaths).tolist(),
             numCols=1,
             numRows=numpaths,
-            cellFilter="raypathvisibleat",
+            cellFilter="RayPathVisibleAt",
         ) is None
 
     def test_receiver_ray_data(self, lt):
         fwskey = (
-            "lens_manager[1].illum_manager[illumination_manager]"
-            ".receivers[receiver_list].farfield_receiver[farfieldreceiver_2]"
-            ".forward_sim_function[forward_simulation]"
+            "LENS_MANAGER[1].ILLUM_MANAGER[Illumination_Manager]"
+            ".RECEIVERS[Receiver_List].FARFIELD_RECEIVER[farFieldReceiver_2]"
+            ".FORWARD_SIM_FUNCTION[Forward_Simulation]"
         )
         numrays = 10
-        items = ["raydatax", "raydatay", "raydatawavelength"]
+        items = ["RayDataX", "RayDataY", "RayDataWavelength"]
         data = lt.GetReceiverRayData(
             receiverKey=fwskey,
             dataDescriptors=items,
@@ -260,10 +260,10 @@ class TestDataAccessFunctions:
 
     def test_swept_profile_points(self, lt):
         sptkey = (
-            "lens_manager[1].components[components].solid[sweptentity_10]"
-            ".swept_primitive[sweptprimitive_5]"
+            "LENS_MANAGER[1].COMPONENTS[Components].SOLID[SweptEntity_10]"
+            ".SWEPT_PRIMITIVE[SweptPrimitive_5]"
         )
-        numpoints = lt.DbGet(sptkey, "numpoints")
+        numpoints = int(lt.DbGet(sptkey, "NumPoints"))
         data = lt.GetSweptProfilePoints(
             profileKey=sptkey,
             profilePoints=np.empty((numpoints, 2)).tolist(),
@@ -301,9 +301,9 @@ class TestSpecialProcessingFunctions:
 
     def test_quick_ray(self, lt):
         srfkey = (
-            "lens_manager[1].components[components].solid[cylinder_6]"
-            ".cylinder_primitive[cylinderprimitive_1]"
-            ".cylinder_surface[cylindersurface]"
+            "LENS_MANAGER[1].COMPONENTS[Components].SOLID[Cylinder_6]"
+            ".CYLINDER_PRIMITIVE[CylinderPrimitive_1]"
+            ".CYLINDER_SURFACE[CylinderSurface]"
         )
 
         # Trace a non-sequential ray starting at the global origin,
@@ -325,13 +325,13 @@ class TestSpecialProcessingFunctions:
 
     def test_spline_patch(self, lt):
         srfkey = (
-            "lens_manager[1].components[components].solid[lens_11]"
-            ".circ_lens_primitive[lp_2]"
-            ".splinepatch_lens_surface[lensrearsurface]"
+            "LENS_MANAGER[1].COMPONENTS[Components].SOLID[Lens_11]"
+            ".CIRC_LENS_PRIMITIVE[LP_2]"
+            ".SPLINEPATCH_LENS_SURFACE[LensRearSurface]"
         )
 
-        u = lt.DbGet(srfkey, "numpointsinu")
-        v = lt.DbGet(srfkey, "numpointsinv")
+        u = int(lt.DbGet(srfkey, "NumPointsInU"))
+        v = int(lt.DbGet(srfkey, "NumPointsInV"))
 
         data = lt.GetSplineData(
             surfKey=srfkey,
@@ -358,9 +358,9 @@ class TestSpecialProcessingFunctions:
 
     def test_spline_sweep(self, lt):
         srfkey = (
-            "lens_manager[1].components[components].solid[lens_12]"
-            ".circ_lens_primitive[lp_3]"
-            ".splinesweep_lens_surface[lensrearsurface]"
+            "LENS_MANAGER[1].COMPONENTS[Components].SOLID[Lens_12]"
+            ".CIRC_LENS_PRIMITIVE[LP_3]"
+            ".SPLINESWEEP_LENS_SURFACE[LensRearSurface]"
         )
 
         numpoints = 5
@@ -414,12 +414,12 @@ class TestViewAccessFunctions:
         key = lt.ViewKey("VIEW[0]")
         assert key.startswith("@")
         assert isinstance(lt.ViewKeyDump(key), str)
-        assert lt.ViewGet(key, "title") == "Console"
+        assert lt.ViewGet(key, "Title") == "Console"
 
     def test_3D_design_view(self, lt):
         key = lt.ViewKey("VIEW[1]")
         assert key.startswith("@")
         assert isinstance(lt.ViewKeyDump(key), str)
-        assert lt.ViewGet(key, "ucsdisplaystyle") == "OpenArrowHead"
-        lt.ViewSet(key, "ucsdisplaystyle", "planes")
-        assert lt.ViewGet(key, "ucsdisplaystyle") == "Planes"
+        assert lt.ViewGet(key, "UCSDisplayStyle") == "OpenArrowHead"
+        lt.ViewSet(key, "UCSDisplayStyle", "Planes")
+        assert lt.ViewGet(key, "UCSDisplayStyle") == "Planes"
