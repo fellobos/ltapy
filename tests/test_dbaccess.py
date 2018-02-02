@@ -6,7 +6,7 @@ FILENAME = "dbaccess.lts"
 
 
 def test_backward_compatibility(lt):
-    solids = lt.DbList("lens_manager[1].components[components]", "solid")
+    solids = lt.DbList("LENS_MANAGER[1].COMPONENTS[Components]", "SOLID")
 
     assert isinstance(solids, str)
     assert solids.startswith("@")
@@ -14,7 +14,7 @@ def test_backward_compatibility(lt):
     numsolids = 0
     while True:
         try:
-            solid = lt.ListNext(solids)
+            lt.ListNext(solids)
         except lighttools.error.APIError:
             break
         numsolids += 1
@@ -22,17 +22,17 @@ def test_backward_compatibility(lt):
 
 
 def test_length(lt):
-    solids = lt.DbList("lens_manager[1].components[components]", "solid")
+    solids = lt.DbList("LENS_MANAGER[1].COMPONENTS[Components]", "SOLID")
     assert len(solids) == lt.ListSize(solids)
 
     sw_part_solids = lt.DbList(
-        "lens_manager[1].components[components]", "sw_part_solid"
+        "LENS_MANAGER[1].COMPONENTS[Components]", "SW_PART_SOLID"
     )
     assert len(sw_part_solids) == 0
 
 
 def test_item_access(lt):
-    solids = lt.DbList("lens_manager[1].components[components]", "solid")
+    solids = lt.DbList("LENS_MANAGER[1].COMPONENTS[Components]", "SOLID")
 
     assert solids[0] == lt.ListAtPos(solids, 1)
     numsolids = lt.ListSize(solids)
@@ -53,21 +53,28 @@ def test_item_access(lt):
 
 
 def test_membership(lt):
-    solids = lt.DbList("lens_manager[1].components[components]", "solid")
+    solids = lt.DbList("LENS_MANAGER[1].COMPONENTS[Components]", "SOLID")
     assert "Toroid_4" in solids
     assert "Toroid_xx" not in solids
 
 
 def test_iteration(lt):
-    solids = lt.DbList("lens_manager[1].components[components]", "solid")
+    solids = lt.DbList("LENS_MANAGER[1].COMPONENTS[Components]", "SOLID")
     for i, solid in enumerate(solids):
         assert solid == lt.ListAtPos(solids, i+1)
     assert i+1 == lt.ListSize(solids)
 
     sw_part_solids = lt.DbList(
-        "lens_manager[1].components[components]", "sw_part_solid"
+        "LENS_MANAGER[1].COMPONENTS[Components]", "SW_PART_SOLID"
     )
     i = None
     for i, sw_part_solid in enumerate(sw_part_solids):
         assert sw_part_solid == lt.ListAtPos(i+1)
     assert i is None
+
+
+def test_garbage_collection(lt):
+    # The DbList object must not be garbage collected if no name is
+    # assigned to the list.
+    cylinder = lt.DbList("LENS_MANAGER[1].COMPONENTS[Components]", "SOLID")[-1]
+    assert lt.DbGet(cylinder, "Name") == "Cylinder_5"
