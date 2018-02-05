@@ -3,9 +3,9 @@ import os
 import numpy as np
 import pytest
 
-import lighttools.config
-import lighttools.error
-import lighttools.utils
+import ltapy.config
+import ltapy.error
+import ltapy.utils
 
 FILENAME = "ltapi.lts"
 PRECISION = 1e-6
@@ -15,7 +15,7 @@ class TestGeneralUtilityFunctions:
 
     def test_command_processor(self, lt):
         assert lt.Cmd("Wireframe") is None
-        with pytest.raises(lighttools.error.APIError):
+        with pytest.raises(ltapy.error.APIError):
             lt.Cmd("Wireframe")
         lt.Cmd("Solid")
 
@@ -35,7 +35,7 @@ class TestGeneralUtilityFunctions:
         assert lt.LicenseIsCheckedOut("LTCore") == 1
 
     def test_logging(self, lt):
-        cff = lighttools.utils.getcff(lt)
+        cff = ltapy.utils.getcff(lt)
         logfile = os.path.join(cff, "logfile.log")
         assert lt.SetLogModeAndFilename(1, logfile) is None
         lt.SetLogModeAndFilename(0, logfile)
@@ -48,7 +48,7 @@ class TestGeneralUtilityFunctions:
         assert lt.End() is None
 
     def test_scripting(self, lt):
-        cff = lighttools.utils.getcff(lt)
+        cff = ltapy.utils.getcff(lt)
         scriptfile = os.path.join(cff, "scriptfile.ltr")
         assert lt.SetScriptModeAndFilename(1, scriptfile) is None
         lt.SetScriptModeAndFilename(0, scriptfile)
@@ -57,14 +57,14 @@ class TestGeneralUtilityFunctions:
 
     def test_session_info(self, lt):
         assert isinstance(lt.GetServerID(), int)
-        assert lighttools.config.VERSION.endswith(lt.Version(0))
+        assert ltapy.config.VERSION.endswith(lt.Version(0))
 
     def test_status_info(self, lt):
         assert isinstance(lt.GetLastMsg(1), str)
         lt.Cmd("Translucent")
         lt.Cmd("Solid")
         assert lt.GetStat() == 0
-        with pytest.raises(lighttools.error.APIError):
+        with pytest.raises(ltapy.error.APIError):
             lt.Cmd("Solid")
         assert lt.GetStat() == 72
         assert isinstance(lt.GetStatusString(0), str)
@@ -96,9 +96,9 @@ class TestDataAccessFunctions:
         assert lt.DbGet(sphkey, "X") == 2
         assert lt.DbSet(prmkey, "Vertex_X_At", -3.14, i=2) is None
         assert lt.DbGet(prmkey, "Vertex_X_At", None, i=2) == -3.14
-        with pytest.raises(lighttools.error.APIError):
+        with pytest.raises(ltapy.error.APIError):
             lt.DbGet(sphkey, "XX")
-        with pytest.raises(lighttools.error.APIError):
+        with pytest.raises(ltapy.error.APIError):
             lt.DbSet(sphkey, "XX", 4)
 
     def test_database_list(self, lt):
@@ -111,7 +111,7 @@ class TestDataAccessFunctions:
         while True:
             try:
                 lt.ListNext(solids)
-            except lighttools.error.APIError:
+            except ltapy.error.APIError:
                 break
             else:
                 numsolids += 1
@@ -121,12 +121,12 @@ class TestDataAccessFunctions:
         # Reset list pointer.
         solids = lt._DbList(compkey, "SOLID")
 
-        with pytest.raises(lighttools.error.APIError):
+        with pytest.raises(ltapy.error.APIError):
             lt.ListAtPos(solids, size+1)
         assert isinstance(lt.ListByName(solids, "Sphere_1"), str)
         assert lt.ListGetPos(solids) == 1
         assert isinstance(lt.ListNext(solids), str)
-        with pytest.raises(lighttools.error.APIError):
+        with pytest.raises(ltapy.error.APIError):
             for i in range(size):
                 lt.ListNext(solids)
         assert isinstance(lt.ListLast(solids), str)

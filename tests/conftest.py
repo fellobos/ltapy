@@ -2,26 +2,7 @@ import os
 
 import pytest
 
-import lighttools.session
-import lighttools.vslogger
-
-
-@pytest.fixture(scope="class")
-def vslogger(request):
-    ltapi, interactive = setup(request)
-
-    # TODO: Extract filename from test module.
-    open_file(ltapi, "vslogger.lts")
-    key = (
-        "lens_manager[1].components[components].solid[phosphor]"
-        ".volume_interface[volumeinterface_eos]"
-        ".volume_scatter_log[volumescatterlog]"
-    )
-    vslog = lighttools.vslogger.VolumeScatterLogger(ltapi, key)
-
-    teardown(ltapi, interactive, request)
-
-    return vslog
+import ltapy.session
 
 
 def setup(request):
@@ -32,9 +13,9 @@ def setup(request):
 
     # Connect to a running LightTools session or create a new one.
     if interactive:
-        ses = lighttools.session.Session(pid)
+        ses = ltapy.session.Session(pid)
     else:
-        ses = lighttools.session.Session.new()
+        ses = ltapy.session.Session.new()
 
     return ses.lt, interactive
 

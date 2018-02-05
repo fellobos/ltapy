@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from lighttools.apodization import tokenize, read_sgmesh, read_vgmesh, read_cgmesh, SurfaceGridMesh
+from ltapy.apodization import tokenize, read_sgmesh, read_vgmesh, read_cgmesh, SurfaceGridMesh
 
 PRECISION = 1e-06
 

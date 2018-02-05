@@ -1,6 +1,6 @@
 import pytest
 
-import lighttools.error
+import ltapy.error
 
 FILENAME = "dbaccess.lts"
 
@@ -15,7 +15,7 @@ def test_backward_compatibility(lt):
     while True:
         try:
             lt.ListNext(solids)
-        except lighttools.error.APIError:
+        except ltapy.error.APIError:
             break
         numsolids += 1
     assert lt.ListSize(solids) == numsolids
@@ -37,13 +37,13 @@ def test_item_access(lt):
     assert solids[0] == lt.ListAtPos(solids, 1)
     numsolids = lt.ListSize(solids)
     assert solids[-1] == lt.ListAtPos(solids, numsolids)
-    with pytest.raises(lighttools.error.APIError):
+    with pytest.raises(ltapy.error.APIError):
         solids[-numsolids-1]
-    with pytest.raises(lighttools.error.APIError):
+    with pytest.raises(ltapy.error.APIError):
         solids[numsolids]
 
     assert solids["Toroid_4"] == lt.ListAtPos(solids, 4)
-    with pytest.raises(lighttools.error.APIError):
+    with pytest.raises(ltapy.error.APIError):
         solids["Toroid_xx"]
 
     assert solids[1:3] == [lt.ListAtPos(solids, 2), lt.ListAtPos(solids, 3)]

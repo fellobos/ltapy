@@ -6,7 +6,7 @@ Simplified access to the LightTools database.
 
 from win32com.client import constants as LTReturnCodeEnum
 
-import lighttools.error
+from . import error
 
 
 class DbList(str):
@@ -151,7 +151,7 @@ class DbList(str):
     def __iter__(self):
         try:
             self._lt.ListSetPos(listKey=self, positionOfList=1)
-        except lighttools.error.APIError as e:
+        except error.APIError as e:
             if (e.status == LTReturnCodeEnum.ltStatusListIsEmpty
                 or e.status == LTReturnCodeEnum.ltStatusInvalidListPosition):
                 pass
@@ -162,7 +162,7 @@ class DbList(str):
     def __contains__(self, item):
         try:
             self._lt.ListByName(listKey=self, dataName=item)
-        except lighttools.error.APIError:
+        except error.APIError:
             return False
         else:
             return True
@@ -170,7 +170,7 @@ class DbList(str):
     def __next__(self):
         try:
             return self._lt.ListNext(listKey=self)
-        except lighttools.error.APIError as e:
+        except error.APIError as e:
             if (e.status == LTReturnCodeEnum.ltStatusListIsEmpty
                 or e.status == LTReturnCodeEnum.ltStatusEndOfList):
                 raise StopIteration

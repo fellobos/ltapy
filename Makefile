@@ -1,11 +1,11 @@
 # -*- MakeFile -*-
 
-VERSION = $(shell grep "__version__" lighttools/__init__.py | cut -d " " -f 3)
+VERSION = $(shell grep "__version__" ltapy/__init__.py | cut -d " " -f 3)
 
 clean:
 	find . -type f -name '*.py[co]' -exec rm -f {} +
 	find . -type d -name '__pycache__' -exec rm -rf {} +
-	rm -rf lighttools.egg-info
+	rm -rf ltapy.egg-info
 
 link: clean
 	python setup.py develop
@@ -17,7 +17,7 @@ build: clean
 	python setup.py sdist
 
 install:
-	pip install dist/lighttools-$(VERSION).zip
+	pip install dist/ltapy-$(VERSION).zip
 
 uninstall:
-	pip uninstall lighttools
+	pip uninstall ltapy

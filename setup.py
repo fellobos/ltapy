@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 from lighttools import __version__
 
 setup(
-    name="lighttools",
+    name="ltapy",
     version=__version__,
     description="Python interface for LightTools",
     author="Florian Boesl",
