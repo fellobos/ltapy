@@ -1,24 +1,8 @@
 """
-Utility functions for LightTools.
-
-This module provides utility functions that are used within LightTools
-and that are also useful for external consumption.
+This module provides utility functions, useful for external consumption.
 """
 
 import numpy as np
-
-
-def getcff(lt):
-    """
-    Return the folder of the current LightTools file.
-
-    Args:
-        ltapi (ILTAPIx): A handle to the LightTools session.
-
-    Returns:
-        str: The current file folder.
-    """
-    return lt.DbGet("LENS_MANAGER[1]", "Current File Folder")
 
 
 def binspace(num, start, stop):
@@ -48,3 +32,16 @@ def binspace(num, start, stop):
     samples, step = np.linspace(start, stop, num+1, retstep=True)
     samples += 0.5 * step
     return samples[:-1]
+
+
+def get_current_file_folder(lt):
+    """
+    Return the folder of the current LightTools file.
+
+    Args:
+        ltapi (ILTAPIx): A handle to the LightTools session.
+
+    Returns:
+        str: The file folder of the current LightTools file.
+    """
+    return lt.DbGet("LENS_MANAGER[1]", "Current File Folder")

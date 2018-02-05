@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """
-Simplified access to the LightTools database.
+This module provides simpler access to the LightTools database.
 """
 
 from win32com.client import constants as LTReturnCodeEnum

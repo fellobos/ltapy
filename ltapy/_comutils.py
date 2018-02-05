@@ -1,25 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """
-Utility methods for client-side COM support.
-
-The `RunningObjectTable` class simplifies the access to the Running
-Object Table (ROT) and to the COM objects that are registered there.
-Furthermore, this module defines a few helper functions to support
-early-bound automation for IDispatch based COM objects.
-
-Notes:
-    COM client support is the ability to manipulate COM server objects
-    via their exposed interface.  Automation objects (e.g. LightTools)
-    are COM server objects that expose their methods and properties
-    using the IDispatch interface.  This interface enables them to be
-    accessed by automation clients, such as Visual Basic or Python.
-
-    All COM server objects that are currently running on the computer
-    are registered in the ROT.  The ROT is a globally accessible
-    look-up table that keeps track of those objects.  The LightTools
-    API also uses the Microsoft Windows COM interface and registers its
-    objects in the ROT.
+This module provides utility objects for client-side COM support.
 """
 
 import os

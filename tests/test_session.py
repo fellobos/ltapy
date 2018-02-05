@@ -15,7 +15,7 @@ def test_connect_to_running_session():
     with pytest.raises(ltapy.error.TimeOutError):
         ltapy.session.Session(timeout=-1)
 
-    home_dir = ltapy.session._get_home_dir(ltapy.config.VERSION)
+    home_dir = ltapy.session._get_home_dir(ltapy.config.LT_VERSION)
     proc = subprocess.Popen(os.path.join(home_dir, "lt.exe"))
     ses = ltapy.session.Session(pid=proc.pid)
     lt = ses.lt
@@ -31,4 +31,4 @@ def test_start_new_session():
     lt = ses.lt
     version = lt.Version(0)
     lt.Cmd("Exit")
-    assert version == ltapy.config.VERSION
+    assert version == ltapy.config.LT_VERSION

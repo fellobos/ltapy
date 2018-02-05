@@ -57,7 +57,7 @@ class TestGeneralUtilityFunctions:
 
     def test_session_info(self, lt):
         assert isinstance(lt.GetServerID(), int)
-        assert ltapy.config.VERSION.endswith(lt.Version(0))
+        assert ltapy.config.LT_VERSION.endswith(lt.Version(0))
 
     def test_status_info(self, lt):
         assert isinstance(lt.GetLastMsg(1), str)

@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """
-Manage the connection of a Python client with LightTools.
+This module provides connection capabilities to LightTools.
 """
 
 import os
@@ -50,7 +48,7 @@ def _get_home_dir(version):
         return value
 
 
-class Session(object):
+class Session:
 
     """
     Connect to a running LightTools session.
@@ -132,7 +130,7 @@ class Session(object):
             raise error.TimeOutError(msg.format(self._timeout))
 
     @classmethod
-    def new(cls, version=config.VERSION, timeout=config.TIMEOUT,
+    def new(cls, version=config.LT_VERSION, timeout=config.TIMEOUT,
             _rebuild=False):
         """
         Start a new LightTools instance and connect to that session.

@@ -1,14 +1,19 @@
-# Default LightTools version.
-VERSION = "8.5.0"
+"""
+This module holds the available configuration options for the package.
+"""
 
-# Timeout for a connection attempt to LightTools.
+#: Default LightTools version.
+LT_VERSION = "8.5.0"
+
+#: Timeout in seconds after that a connection attempt to LightTools is
+#: aborted.
 TIMEOUT = 60
 
-# Default version of JumpStart macro library
-JSLIB = "LTCOM64.JSNET"
+#: Default version of the JumpStart macro function library.
+JS_VERSION = "LTCOM64.JSNET"
 
 # Default logging configuration for LightTools.
-LOGGING = {
+_LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {

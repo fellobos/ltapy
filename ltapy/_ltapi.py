@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """
-LightTools API object with enhanced features.
+This module provides a LightTools API object with enhanced features.
 """
 
 import functools
@@ -316,8 +314,6 @@ def _fix_dbkeydump_argspec(lt):
 
     Args:
         lt (ILTAPIx): A handle to the LightTools session.
-
-    Notes:
     """
     # This function must be executed only once, to avoid that the original
     # lt._DbKeyDump() function gets overwritten.

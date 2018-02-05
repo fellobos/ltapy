@@ -1,57 +1,5 @@
 """
-Objects for dealing with source apodization.
-
-This module provides a number of objects useful for dealing with source
-apodization and apodization files.  It features a number of parser
-functions for reading surface, cylinder or volume apodization file data
-into appropriate GridMesh objects.  These container objects store the
-grid mesh data and enable data export to e.g. a comma-separated values
-file.
-
-Notes:
-    Refer to the LightTools Help for more information on source
-    apodization and apodization file formats (Illumination Module
-    User's Guide > Chapter 2 Light Sources > Source Apodization).
-
-Examples:
-    Create a VolumeGridMesh object from three-dimensional mesh data
-    and data bounds.
-
-    >>> import numpy as np
-    >>> values = np.array([
-            [[1, 0, 7], [2, 1, 6], [4, 5 ,1], [1, 1, 6]],
-            [[4, 5, 1], [1, 2, 3], [2, 2, 2], [1, 2, 3]],
-        ])
-    >>> bounds = (-1.5, 1.5, -2.0, 2.0, 0, 5)
-    >>> vgmesh = VolumeGridMesh(values, bounds)
-    >>> vgmesh.values
-    array([[[1, 0, 7],
-            [2, 1, 6],
-            [4, 5, 1],
-            [1, 1, 6]],
-
-           [[4, 5, 1],
-            [1, 2, 3],
-            [2, 2, 2],
-            [1, 2, 3]]])
-    >>> vgmesh.bounds
-    (-1.5, 1.5, -2.0, 2.0, 0, 5)
-    >>> vgmesh.dim
-    (3, 4, 2)
-
-    Write the grid mesh data to a volume apodization file.
-
-    >>> vgmesh.write("volume_apodization.txt")
-
-    Read the volume apodization file into a VolumeGridMesh object.
-
-    >>> vgmesh = read_vgmesh("volume_apodization.txt")
-    >>> vgmesh.dim
-    (3, 4, 2)
-
-    Write the grid mesh data to a comma-separated values (CSV) file.
-
-    >>> vgmesh.to_csv("volume_apodization.csv")
+This module provides objects for dealing with source apodization.
 """
 
 import collections
@@ -99,7 +47,7 @@ _vghdparams = _HeaderParams(
 
 def read_sgmesh(filepath):
     """
-    Read surface apodization file into SurfaceGridMesh object.
+    Read a surface apodization file into a `SurfaceGridMesh` object.
 
     Args:
         filepath (str): Filepath of the surface apodization file.
@@ -114,7 +62,7 @@ def read_sgmesh(filepath):
 
 def read_cgmesh(filepath):
     """
-    Read cylinder apodization file into CylinderGridMesh object.
+    Read a cylinder apodization file into a `CylinderGridMesh` object.
 
     Args:
         filepath (str): Filepath of the cylinder apodization file.
@@ -129,7 +77,7 @@ def read_cgmesh(filepath):
 
 def read_vgmesh(filepath):
     """
-    Read volume apodization file into VolumeGridMesh object.
+    Read a volume apodization file into a `VolumeGridMesh` object.
 
     Args:
         filepath (str): Filepath of the volume apodization file.
@@ -263,7 +211,7 @@ class _GridMesh:
     def dim(self):
         return self.values.shape[::-1]
 
-    def write(self, filepath, comment=""):
+    def write(self, filepath, comment=None):
         """
         Write grid mesh data to an apodization file.
 
@@ -306,8 +254,8 @@ class SurfaceGridMesh(_GridMesh):
             where n is the number of columns and m is the number of rows.
 
     Examples:
-        Create a SurfaceGridMesh object from two-dimensional mesh data and
-        (optional) data bounds.
+        Create a `SurfaceGridMesh` object from two-dimensional mesh data
+        and (optional) data bounds:
 
         >>> import numpy as np
         >>> values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
@@ -321,7 +269,7 @@ class SurfaceGridMesh(_GridMesh):
         >>> sgmesh.dim
         (3, 2)
 
-        Write the grid mesh data to a surface apodization file.
+        Write the grid mesh data to a surface apodization file:
 
         >>> sgmesh.write("surface_apodization.txt")
     """
@@ -353,12 +301,11 @@ class SurfaceGridMesh(_GridMesh):
         Args:
             filepath (str): Filepath of the CSV file.
             sort (bool, optional): Numerically sort CSV file values along rows
-                if sort is True. The default is False.
+                if sort is True.
             ascending (bool, optional): The minimum value of V (vmin) is in
-                the first row if ascending is True. The default is False.
-                Refer to the LightTools Help (Section: Apodization Data
-                Bounds) for an explanation how bounds are mapped to the data
-                values.
+                the first row if ascending is True.  Refer to the LightTools
+                Help (Section: Apodization Data Bounds) for an explanation how
+                bounds are mapped to the data values.
 
         Raises:
             ValueError: If no data bounds are specified.
@@ -408,8 +355,8 @@ class CylinderGridMesh(_GridMesh):
             where n is the number of columns and m is the number of rows.
 
     Examples:
-        Create a CylinderGridMesh object from two-dimensional mesh data
-        and data bounds.
+        Create a `CylinderGridMesh` object from two-dimensional mesh data
+        and data bounds:
 
         >>> import numpy as np
         >>> values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
@@ -423,7 +370,7 @@ class CylinderGridMesh(_GridMesh):
         >>> cgmesh.dim
         (3, 2)
 
-        Write the grid mesh data to a cylinder apodization file.
+        Write the grid mesh data to a cylinder apodization file:
 
         >>> cgmesh.write("cylinder_apodization.txt")
     """
@@ -449,7 +396,7 @@ class CylinderGridMesh(_GridMesh):
         Args:
             filepath (str): Filepath of the CSV file.
             sort (bool, optional): Numerically sort CSV file values along rows
-                if sort is True. The default is False.
+                if sort is True.
         """
         n, m = self.dim
         rmin, rmax, lmin, lmax = self.bounds
@@ -492,8 +439,8 @@ class VolumeGridMesh(_GridMesh):
             rows and p is the number of layers (xy matrices).
 
     Examples:
-        Create a VolumeGridMesh object from three-dimensional mesh data
-        and data bounds.
+        Create a `VolumeGridMesh` object from three-dimensional mesh data
+        and data bounds:
 
         >>> import numpy as np
         >>> values = np.array([
@@ -507,7 +454,6 @@ class VolumeGridMesh(_GridMesh):
                 [2, 1, 6],
                 [4, 5, 1],
                 [1, 1, 6]],
-
                [[4, 5, 1],
                 [1, 2, 3],
                 [2, 2, 2],
@@ -517,7 +463,7 @@ class VolumeGridMesh(_GridMesh):
         >>> vgmesh.dim
         (3, 4, 2)
 
-        Write the grid mesh data to a volume apodization file.
+        Write the grid mesh data to a volume apodization file:
 
         >>> vgmesh.write("volume_apodization.txt")
     """
@@ -544,7 +490,7 @@ class VolumeGridMesh(_GridMesh):
         Args:
             filepath (str): Filepath of the CSV file.
             sort (bool, optional): Numerically sort CSV file values along rows
-                if sort is True. The default is False.
+                if sort is True.
         """
         n, m, p = self.dim
         xmin, xmax, ymin, ymax, zmin, zmax = self.bounds

@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
-
 """
-Provide access to the JumpStart macro function library.
+This module provides access to the JumpStart macro function library.
 """
 
 import pythoncom
@@ -11,7 +9,7 @@ from . import _comutils
 from . import config
 
 
-def _JSLIB(progid=config.JSLIB, rebuild=False):
+def _JSLIB(progid=config.JS_VERSION, rebuild=False):
     """
     Create a COM client object for the JumpStart macro function library.
 
@@ -85,5 +83,5 @@ def _ensure_makepy_support(progid, rebuild=False):
             )
 
 
-#: Global, single instance of the JumpStart macro function library.
+#: A global, single instance of the JumpStart macro function library.
 js = _JSLIB(rebuild=True)
