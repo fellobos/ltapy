@@ -1,12 +1,12 @@
 """
 Objects for dealing with source apodization.
 
-This module provides a number of objects useful for dealing with
-source apodization and apodization files. It features a number of
-parser functions for reading surface, cylinder or volume apodization
-file data into appropriate GridMesh objects. These container objects
-store the grid mesh data and enable data export to various file
-formats (e.g. to a comma-separated values file).
+This module provides a number of objects useful for dealing with source
+apodization and apodization files.  It features a number of parser
+functions for reading surface, cylinder or volume apodization file data
+into appropriate GridMesh objects.  These container objects store the
+grid mesh data and enable data export to e.g. a comma-separated values
+file.
 
 Notes:
     Refer to the LightTools Help for more information on source
@@ -159,15 +159,14 @@ def parse(text):
     """
     Parse apodization file contents into logical sections.
 
-    Apodization files consist of two sections: A header section followed
-    by a data section. The mesh grid values in the data section are
-    separated by whitespace and can be entered in free format. The header
-    section has at least a single header line that starts with a keyword
-    identifier (e.g. "mesh:", "xmin:", ...) followed by the associated
-    data values.
+    Apodization files consist of two sections, a header section followed by
+    a data section.  The mesh grid values in the data section are separated
+    by whitespace and can be entered in free format.  The header section
+    has at least a single header line that starts with a keyword identifier
+    (e.g. "mesh:", "xmin:", ...) followed by the associated data values.
 
     Args:
-        text (str): Content of the apodization file.
+        text (str): The content of the apodization file.
 
     Returns:
         header (dict): Header section with each header line appearing as
@@ -193,7 +192,7 @@ def tokenize(text):
     Generate a stream of tokens.
 
     Args:
-        text (str): Content of the apodization file.
+        text (str): The content of the apodization file.
 
     Yields:
         str: Token
@@ -222,7 +221,7 @@ def extract_header_info(header, hdparams):
         bounds (tuple): Bounds of the data set.
     """
     if hdparams.type == GridType.SURFACE:
-        for name in ("spheremesh", "polarmesh"):  # alternative mesh names
+        for name in ("spheremesh", "polarmesh"):  # Alternative mesh names
             if name in header:
                 header[hdparams.name] = header.pop(name)
         n, m, *bounds = header[hdparams.name]
