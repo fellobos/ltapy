@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ltapy.apodization import tokenize, read_sgmesh, read_vgmesh, read_cgmesh, SurfaceGridMesh
+import ltapy.apodization
 
 PRECISION = 1e-06
 
@@ -26,7 +26,7 @@ tokenize_data = [
 @pytest.mark.parametrize("text, count", tokenize_data)
 def test_tokenize(text, count):
     tokens = []
-    for token in tokenize(text):
+    for token in ltapy.apodization._tokenize(text):
         tokens.append(token)
     assert len(tokens) == count
 
@@ -102,7 +102,7 @@ mesh: 3 2
 ])
 def test_sgmesh_read(text, dim, bounds, size, mean):
     f = write_tempfile(text)
-    sgmesh = read_sgmesh(f.name)
+    sgmesh = ltapy.apodization.read_sgmesh(f.name)
     os.remove(f.name)
     assert sgmesh.dim == dim
     assert sgmesh.bounds == bounds
@@ -118,7 +118,7 @@ def write_tempfile(text):
 
 def test_sgmesh_write():
     f = write_tempfile(sgmesh_8)
-    sgmesh = read_sgmesh(f.name)
+    sgmesh = ltapy.apodization.read_sgmesh(f.name)
     sgmesh.write(f.name, comment=sgmesh_8.split("\n")[0])
     with open(f.name) as f:
         assert f.read() == sgmesh_8
@@ -127,13 +127,13 @@ def test_sgmesh_write():
 
 def test_sgmesh_optional_bounds():
     values = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-    sgmesh = SurfaceGridMesh(values)
+    sgmesh = ltapy.apodization.SurfaceGridMesh(values)
     assert sgmesh.bounds is None
 
 
 def test_sgmesh_to_csv():
     f = write_tempfile(sgmesh_2)
-    sgmesh = read_sgmesh(f.name)
+    sgmesh = ltapy.apodization.read_sgmesh(f.name)
     n, m = sgmesh.dim
 
     sgmesh.to_csv(f.name)
@@ -203,7 +203,7 @@ lmax: 5
 
 def test_cgmesh_read():
     f = write_tempfile(cgmesh_1)
-    cgmesh = read_cgmesh(f.name)
+    cgmesh = ltapy.apodization.read_cgmesh(f.name)
     os.remove(f.name)
     assert cgmesh.dim == (3, 5)
     assert cgmesh.bounds == (1, 4, 0, 5)
@@ -213,7 +213,7 @@ def test_cgmesh_read():
 
 def test_cgmesh_write():
     f = write_tempfile(cgmesh_1)
-    cgmesh = read_cgmesh(f.name)
+    cgmesh = ltapy.apodization.read_cgmesh(f.name)
     cgmesh.write(f.name, comment=cgmesh_1.split("\n")[0])
     with open(f.name) as f:
         assert f.read() == cgmesh_1
@@ -222,7 +222,7 @@ def test_cgmesh_write():
 
 def test_cgmesh_to_csv():
     f = write_tempfile(cgmesh_1)
-    cgmesh = read_cgmesh(f.name)
+    cgmesh = ltapy.apodization.read_cgmesh(f.name)
     n, m = cgmesh.dim
 
     cgmesh.to_csv(f.name)
@@ -295,7 +295,7 @@ zmax: 5
 
 def test_vgmesh_read():
     f = write_tempfile(vgmesh_1)
-    vgmesh = read_vgmesh(f.name)
+    vgmesh = ltapy.apodization.read_vgmesh(f.name)
     os.remove(f.name)
     assert vgmesh.dim == (3, 4, 5)
     assert vgmesh.bounds == (-1.5, 1.5, -2.0, 2.0, 0.0, 5.0)
@@ -305,7 +305,7 @@ def test_vgmesh_read():
 
 def test_vgmesh_write():
     f = write_tempfile(vgmesh_1)
-    vgmesh = read_vgmesh(f.name)
+    vgmesh = ltapy.apodization.read_vgmesh(f.name)
     vgmesh.write(f.name, comment=vgmesh_1.split("\n")[0])
     with open(f.name) as f:
         assert f.read() == vgmesh_1
@@ -314,7 +314,7 @@ def test_vgmesh_write():
 
 def test_vgmesh_to_csv():
     f = write_tempfile(vgmesh_1)
-    vgmesh = read_vgmesh(f.name)
+    vgmesh = ltapy.apodization.read_vgmesh(f.name)
 
     vgmesh.to_csv(f.name)
     df = pd.read_csv(f.name, names=["x", "y", "z", "value"], header=None)
@@ -325,7 +325,7 @@ def test_vgmesh_to_csv():
 
 def test_vgmesh_to_csv():
     f = write_tempfile(vgmesh_1)
-    vgmesh = read_vgmesh(f.name)
+    vgmesh = ltapy.apodization.read_vgmesh(f.name)
     n, m, p = vgmesh.dim
 
     vgmesh.to_csv(f.name)

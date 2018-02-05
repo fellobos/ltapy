@@ -63,33 +63,33 @@ import shlex
 import numpy as np
 
 
-class GridType(enum.Enum):
+class _GridType(enum.Enum):
     SURFACE = 1
     CYLINDER = 2
     VOLUME = 3
 
 
-HeaderParams = collections.namedtuple(
-    typename="HeaderParams",
+_HeaderParams = collections.namedtuple(
+    typename="_HeaderParams",
     field_names=["type", "name", "dim", "bounds"],
 )
 
-sghdparams = HeaderParams(
-    type=GridType.SURFACE,
+_sghdparams = _HeaderParams(
+    type=_GridType.SURFACE,
     name="mesh",
     dim=("n", "m"),
     bounds=("umin", "vmin", "umax", "vmax"),
 )
 
-cghdparams = HeaderParams(
-    type=GridType.CYLINDER,
+_cghdparams = _HeaderParams(
+    type=_GridType.CYLINDER,
     name="cylindermesh",
     dim=("n", "m"),
     bounds=("rmin", "rmax", "lmin", "lmax"),
 )
 
-vghdparams = HeaderParams(
-    type=GridType.VOLUME,
+_vghdparams = _HeaderParams(
+    type=_GridType.VOLUME,
     name="3dregulargridmesh",
     dim=("n", "m", "p"),
     bounds=("xmin", "xmax", "ymin", "ymax", "zmin", "zmax"),
@@ -107,7 +107,7 @@ def read_sgmesh(filepath):
         SurfaceGridMesh: A container object for interacting with the
             surface grid mesh data.
     """
-    values, bounds = read_mesh(filepath, sghdparams)
+    values, bounds = _read_mesh(filepath, _sghdparams)
     return SurfaceGridMesh(values, bounds)
 
 
@@ -122,7 +122,7 @@ def read_cgmesh(filepath):
         CylinderGridMesh: A container object for interacting with the
             cylinder grid mesh data.
     """
-    values, bounds = read_mesh(filepath, cghdparams)
+    values, bounds = _read_mesh(filepath, _cghdparams)
     return CylinderGridMesh(values, bounds)
 
 
@@ -137,25 +137,25 @@ def read_vgmesh(filepath):
         VolumeGridMesh: A container object for interacting with the volume
             grid mesh data.
     """
-    values, bounds = read_mesh(filepath, vghdparams)
+    values, bounds = _read_mesh(filepath, _vghdparams)
     return VolumeGridMesh(values, bounds)
 
 
-def read_mesh(filepath, hdparams):
-    text = read(filepath)
-    header, values = parse(text)
-    dim, bounds = extract_header_info(header, hdparams)
-    values = reshape(values, dim)
+def _read_mesh(filepath, hdparams):
+    text = _read(filepath)
+    header, values = _parse(text)
+    dim, bounds = _extract_header_info(header, hdparams)
+    values = _reshape(values, dim)
     return values, bounds
 
 
-def read(filepath):
+def _read(filepath):
     with open(filepath) as f:
         text = f.read()
     return text.lower()  # ignore case
 
 
-def parse(text):
+def _parse(text):
     """
     Parse apodization file contents into logical sections.
 
@@ -175,7 +175,7 @@ def parse(text):
             aggregated into a one-dimensional list.
     """
     header, values = dict(), list()
-    for token in tokenize(text):
+    for token in _tokenize(text):
         if token.endswith(":"):
             key = token.rstrip(":")
             container = header.setdefault(key, list())
@@ -187,7 +187,7 @@ def parse(text):
     return header, values
 
 
-def tokenize(text):
+def _tokenize(text):
     """
     Generate a stream of tokens.
 
@@ -207,33 +207,33 @@ def tokenize(text):
         yield token
 
 
-def extract_header_info(header, hdparams):
+def _extract_header_info(header, hdparams):
     """
     Extract information from an apodization file header section.
 
     Args:
         header (dict): Header section with each header line appearing as
             separate key:value pair.
-        hdparams (HeaderParams): Grid mesh header parameters.
+        hdparams (_HeaderParams): Grid mesh header parameters.
 
     Returns:
         dim (tuple): Dimensions of the data set.
         bounds (tuple): Bounds of the data set.
     """
-    if hdparams.type == GridType.SURFACE:
+    if hdparams.type == _GridType.SURFACE:
         for name in ("spheremesh", "polarmesh"):  # Alternative mesh names
             if name in header:
                 header[hdparams.name] = header.pop(name)
         n, m, *bounds = header[hdparams.name]
         dim = int(n), int(m)
         bounds = tuple(map(float, bounds)) if bounds else None
-    else:  # GridType.CYLINDER or GridType.VOLUME
+    else:  # _GridType.CYLINDER or _GridType.VOLUME
         dim = [int(x) for x in header[hdparams.name]]
         bounds = tuple(float(header[bound][0]) for bound in hdparams.bounds)
     return dim, bounds
 
 
-def reshape(values, dim):
+def _reshape(values, dim):
     """
     Reshape array to the given dimensions, ignoring extra data items.
 
@@ -248,7 +248,7 @@ def reshape(values, dim):
     return np.reshape(values[:size], dim[::-1]).astype(np.float)
 
 
-class GridMesh:
+class _GridMesh:
 
     """
     Base class for container objects interacting with grid mesh data.
@@ -284,7 +284,7 @@ class GridMesh:
             np.savetxt(f, self.values, fmt="%g")
 
 
-class SurfaceGridMesh(GridMesh):
+class SurfaceGridMesh(_GridMesh):
 
     """
     Container object for interacting with surface grid mesh data.
@@ -325,7 +325,7 @@ class SurfaceGridMesh(GridMesh):
         >>> sgmesh.write("surface_apodization.txt")
     """
 
-    hdparams = sghdparams
+    _hdparams = _sghdparams
 
     def __init__(self, values, bounds=None):
         super().__init__(values, bounds)
@@ -333,7 +333,7 @@ class SurfaceGridMesh(GridMesh):
     def _write_header(self, filepath, comment):
         super()._write_header(filepath, comment)
         with open(filepath, "a") as f:
-            f.write("{}: {:d} {:d}".format(self.hdparams.name, *self.dim))
+            f.write("{}: {:d} {:d}".format(self._hdparams.name, *self.dim))
             if self.bounds is not None:
                 f.write(" {:g} {:g} {:g} {:g}".format(*self.bounds))
             f.write("\n")
@@ -387,7 +387,7 @@ class SurfaceGridMesh(GridMesh):
             np.savetxt(f, data, fmt="%g", delimiter=",")
 
 
-class CylinderGridMesh(GridMesh):
+class CylinderGridMesh(_GridMesh):
  
     """
     Container object for interacting with cylinder grid mesh data.
@@ -428,13 +428,13 @@ class CylinderGridMesh(GridMesh):
         >>> cgmesh.write("cylinder_apodization.txt")
     """
 
-    hdparams = cghdparams
+    _hdparams = _cghdparams
 
     def _write_header(self, filepath, comment):
         super()._write_header(filepath, comment)
         with open(filepath, "a") as f:
-            f.write("{}: {:d} {:d}\n".format(self.hdparams.name, *self.dim))
-            for name, value in zip(self.hdparams.bounds, self.bounds):
+            f.write("{}: {:d} {:d}\n".format(self._hdparams.name, *self.dim))
+            for name, value in zip(self._hdparams.bounds, self.bounds):
                 f.write("{}: {:g}\n".format(name, value))
 
     def to_csv(self, filepath, sort=False):
@@ -469,7 +469,7 @@ class CylinderGridMesh(GridMesh):
             np.savetxt(f, data, fmt="%g", delimiter=",")
 
 
-class VolumeGridMesh(GridMesh):
+class VolumeGridMesh(_GridMesh):
  
     """
     Container object for interacting with volume grid mesh data.
@@ -522,16 +522,15 @@ class VolumeGridMesh(GridMesh):
         >>> vgmesh.write("volume_apodization.txt")
     """
 
-
-    hdparams = vghdparams
+    _hdparams = _vghdparams
 
     def _write_header(self, filepath, comment):
         super()._write_header(filepath, comment)
         with open(filepath, "a") as f:
             f.write(
-                "{}: {:d} {:d} {:d}\n".format(self.hdparams.name, *self.dim)
+                "{}: {:d} {:d} {:d}\n".format(self._hdparams.name, *self.dim)
             )
-            for name, value in zip(self.hdparams.bounds, self.bounds):
+            for name, value in zip(self._hdparams.bounds, self.bounds):
                 f.write("{}: {:g}\n".format(name, value))
 
     def to_csv(self, filepath, sort=False):
