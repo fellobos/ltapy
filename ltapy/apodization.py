@@ -57,10 +57,11 @@ Examples:
 import collections
 import enum
 import functools
-import os
 import shlex
 
 import numpy as np
+
+from . import utils
 
 
 class _GridType(enum.Enum):
@@ -338,7 +339,6 @@ class SurfaceGridMesh(_GridMesh):
                 f.write(" {:g} {:g} {:g} {:g}".format(*self.bounds))
             f.write("\n")
 
-
     def to_csv(self, filepath, sort=False, ascending=False):
         """
         Write surface grid mesh data to a comma-separated values (CSV) file.
@@ -370,8 +370,8 @@ class SurfaceGridMesh(_GridMesh):
         n, m = self.dim
         umin, vmin, umax, vmax = self.bounds
 
-        xbins = binspace(n, umin, umax)
-        ybins = binspace(m, vmax, vmin)
+        xbins = utils.binspace(n, umin, umax)
+        ybins = utils.binspace(m, vmax, vmin)
         if ascending:
             ybins = np.flipud(ybins)
         X, Y = np.meshgrid(xbins, ybins)
@@ -388,7 +388,7 @@ class SurfaceGridMesh(_GridMesh):
 
 
 class CylinderGridMesh(_GridMesh):
- 
+
     """
     Container object for interacting with cylinder grid mesh data.
 
@@ -454,8 +454,8 @@ class CylinderGridMesh(_GridMesh):
         n, m = self.dim
         rmin, rmax, lmin, lmax = self.bounds
 
-        xbins = binspace(n, rmin, rmax)
-        ybins = binspace(m, lmin, lmax)
+        xbins = utils.binspace(n, rmin, rmax)
+        ybins = utils.binspace(m, lmin, lmax)
         X, Y = np.meshgrid(xbins, ybins)
         data = np.stack(
             arrays=(X.flatten(), Y.flatten(), self.values.flatten()),
@@ -470,7 +470,7 @@ class CylinderGridMesh(_GridMesh):
 
 
 class VolumeGridMesh(_GridMesh):
- 
+
     """
     Container object for interacting with volume grid mesh data.
 
@@ -549,9 +549,9 @@ class VolumeGridMesh(_GridMesh):
         n, m, p = self.dim
         xmin, xmax, ymin, ymax, zmin, zmax = self.bounds
 
-        xbins = binspace(n, xmin, xmax)
-        ybins = binspace(m, ymin, ymax)
-        zbins = binspace(p, zmin, zmax)
+        xbins = utils.binspace(n, xmin, xmax)
+        ybins = utils.binspace(m, ymin, ymax)
+        zbins = utils.binspace(p, zmin, zmax)
         Z, Y, X = np.meshgrid(zbins, ybins, xbins, indexing='ij')
         data = np.stack(
             arrays=(
@@ -570,36 +570,7 @@ class VolumeGridMesh(_GridMesh):
         with open(filepath, "ab") as f:
             n, m, p = self.dim
             xmin, xmax, ymin, ymax, zmin, zmax = self.bounds
-            zbins = binspace(p, zmin, zmax)
+            zbins = utils.binspace(p, zmin, zmax)
             for z, xymatrix in zip(zbins, self.values):
                 f.write("# xy matrix for z = {:g}\n".format(z).encode())
                 np.savetxt(f, xymatrix, fmt="%g")
-
-
-def binspace(num, start, stop):
-    """
-    Return evenly spaced bin midpoints over the given interval.
-
-    Calculate num evenly spaced bin midpoints over the closed interval
-    [start, stop].
-
-    Args:
-        num (int): Number of bin midpoints to generate. Must be positive.
-        start (float): The starting value of the interval.
-        stop (float): The end value of the interval.
-
-    Returns:
-        numpy.ndarray: num equally spaced bin midpoints in the interval
-            [start, stop].
-
-    Examples:
-        >>> bins = binspace(11, -1, 1)
-        >>> bins
-        array([ -9.09090909e-01,  -7.27272727e-01,  -5.45454545e-01,
-                -3.63636364e-01,  -1.81818182e-01,   8.32667268e-17,
-                 1.81818182e-01,   3.63636364e-01,   5.45454545e-01,
-                 7.27272727e-01,   9.09090909e-01])
-    """
-    samples, step = np.linspace(start, stop, num+1, retstep=True)
-    samples += 0.5 * step
-    return samples[:-1]

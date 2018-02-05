@@ -315,17 +315,6 @@ def test_vgmesh_write():
 def test_vgmesh_to_csv():
     f = write_tempfile(vgmesh_1)
     vgmesh = ltapy.apodization.read_vgmesh(f.name)
-
-    vgmesh.to_csv(f.name)
-    df = pd.read_csv(f.name, names=["x", "y", "z", "value"], header=None)
-    assert df.value.mean() - vgmesh.values.mean() < 1e-6
-
-    os.remove(f.name)
-
-
-def test_vgmesh_to_csv():
-    f = write_tempfile(vgmesh_1)
-    vgmesh = ltapy.apodization.read_vgmesh(f.name)
     n, m, p = vgmesh.dim
 
     vgmesh.to_csv(f.name)
