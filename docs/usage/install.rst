@@ -16,7 +16,6 @@ Clone the public repository to get a local copy of the source:
 .. code-block:: bash
 
     $ git clone git://github.com/fellobos/ltapy.git
-    $ python setup.py install
 
 Once you have it, you can embed ltapy in your own Python package, or
 install it into your site-packages easily:

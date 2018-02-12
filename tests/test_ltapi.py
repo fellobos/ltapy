@@ -35,7 +35,7 @@ class TestGeneralUtilityFunctions:
         assert lt.LicenseIsCheckedOut("LTCore") == 1
 
     def test_logging(self, lt):
-        cff = ltapy.utils.getcff(lt)
+        cff = ltapy.utils.get_current_file_folder(lt)
         logfile = os.path.join(cff, "logfile.log")
         assert lt.SetLogModeAndFilename(1, logfile) is None
         lt.SetLogModeAndFilename(0, logfile)
@@ -48,7 +48,7 @@ class TestGeneralUtilityFunctions:
         assert lt.End() is None
 
     def test_scripting(self, lt):
-        cff = ltapy.utils.getcff(lt)
+        cff = ltapy.utils.get_current_file_folder(lt)
         scriptfile = os.path.join(cff, "scriptfile.ltr")
         assert lt.SetScriptModeAndFilename(1, scriptfile) is None
         lt.SetScriptModeAndFilename(0, scriptfile)
