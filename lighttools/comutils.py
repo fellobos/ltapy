@@ -112,7 +112,12 @@ class RunningObjectTable(object):
         objs = {}
         for moniker in self.rot:
             moniker_name = self.get_moniker_name(moniker)
-            obj = self.rot.GetObject(moniker)
+            # There is a chance that the object (identified by moniker) is not
+            # alive any more!
+            try:
+                obj = self.rot.GetObject(moniker)
+            except pythoncom.com_error:
+                continue
             objs[moniker_name] = obj
         return objs
 
