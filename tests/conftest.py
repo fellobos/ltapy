@@ -2,24 +2,26 @@ import os
 
 import pytest
 
-from lighttools import session
-from lighttools import vslogger as vsl
+import lighttools.session
+import lighttools.vslogger
 
 
 @pytest.fixture(scope="class")
 def vslogger(request):
-    interactive, lt = setup(request)
+    ltapi, interactive = setup(request)
 
-    open_file(lt, "vslogger.lts")
+    # TODO: Extract filename from test module.
+    open_file(ltapi, "vslogger.lts")
     key = (
-        "SOLID[Phosphor].VOLUME_INTERFACE[VolumeInterface_EOS]"
-        ".VOLUME_SCATTER_LOG[VolumeScatterLog]"
+        "lens_manager[1].components[components].solid[phosphor]"
+        ".volume_interface[volumeinterface_eos]"
+        ".volume_scatter_log[volumescatterlog]"
     )
-    vslogger = vsl.VolumeScatterLogger(lt, key)
+    vslog = lighttools.vslogger.VolumeScatterLogger(ltapi, key)
 
-    teardown(interactive, lt, request)
+    teardown(ltapi, interactive, request)
 
-    return vslogger
+    return vslog
 
 
 def setup(request):
@@ -30,30 +32,39 @@ def setup(request):
 
     # Connect to a running LightTools session or create a new one.
     if interactive:
-        ses = session.Session(pid)
+        ses = lighttools.session.Session(pid)
     else:
-        ses = session.Session.new()
+        ses = lighttools.session.Session.new()
 
-    return interactive, ses.ltapi
+    return ses.ltapi, interactive
 
 
 def pytest_addoption(parser):
+    # Add a command line option for specifying the LightTools process ID.
     parser.addoption("--pid", help="PID of LightTools process", type=int)
 
 
-def open_file(lt, filename):
+def open_file(ltapi, filename):
     # Open the given LightTools file.
     path = os.path.join(os.path.dirname(__file__), "models", filename)
     path = "/".join(path.split("\\"))
-    lt.SetOption("SHOWFILEDIALOGBOX", 0)
-    lt.Cmd("Open " + lt.Str(path))
-    lt.SetOption("SHOWFILEDIALOGBOX", 1)
-    lt.Cmd("\V3D")
+    ltapi.SetOption("SHOWFILEDIALOGBOX", 0)
+    ltapi.Cmd("Open " + ltapi.Str(path))
+    ltapi.SetOption("SHOWFILEDIALOGBOX", 1)
+    ltapi.Cmd("\V3D")
 
 
-def teardown(interactive, lt, request):
+def teardown(ltapi, interactive, request):
     # Close LightTools if testing is not interactive.
     def fin():
         if not interactive:
-            lt.Cmd("Exit")
+            ltapi.Cmd("Exit")
     request.addfinalizer(fin)
+
+
+@pytest.fixture(scope="module")
+def lt(request):
+    ltapi, interactive = setup(request)
+    open_file(ltapi, getattr(request.module, "FILENAME"))
+    teardown(ltapi, interactive, request)
+    return ltapi
