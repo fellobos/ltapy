@@ -1,0 +1,274 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Core interface &#8212; ltapy 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extension modules" href="extension.html" />
+    <link rel="prev" title="Extended functionality" href="../usage/extended.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="core-interface">
+<h1>Core interface<a class="headerlink" href="#core-interface" title="Permalink to this headline">¶</a></h1>
+<p>This part of the documentation covers ltapy’s core interface to the
+LightTools API.</p>
+<div class="section" id="module-ltapy.config">
+<span id="configuration"></span><h2>Configuration<a class="headerlink" href="#module-ltapy.config" title="Permalink to this headline">¶</a></h2>
+<p>This module holds the available configuration options for the package.</p>
+<dl class="data">
+<dt id="ltapy.config.JS_VERSION">
+<code class="descclassname">ltapy.config.</code><code class="descname">JS_VERSION</code><em class="property"> = 'LTCOM64.JSNET'</em><a class="headerlink" href="#ltapy.config.JS_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default version of the JumpStart macro function library.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ltapy.config.LT_VERSION">
+<code class="descclassname">ltapy.config.</code><code class="descname">LT_VERSION</code><em class="property"> = '8.5.0'</em><a class="headerlink" href="#ltapy.config.LT_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default LightTools version.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="ltapy.config.TIMEOUT">
+<code class="descclassname">ltapy.config.</code><code class="descname">TIMEOUT</code><em class="property"> = 60</em><a class="headerlink" href="#ltapy.config.TIMEOUT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timeout in seconds after that a connection attempt to LightTools is
+aborted.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ltapy.error">
+<span id="exceptions"></span><h2>Exceptions<a class="headerlink" href="#module-ltapy.error" title="Permalink to this headline">¶</a></h2>
+<p>This module contains the LightTools exception classes.</p>
+<dl class="exception">
+<dt id="ltapy.error.LightToolsError">
+<em class="property">exception </em><code class="descclassname">ltapy.error.</code><code class="descname">LightToolsError</code><a class="headerlink" href="#ltapy.error.LightToolsError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Base class for all LightTools exceptions.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="ltapy.error.TimeOutError">
+<em class="property">exception </em><code class="descclassname">ltapy.error.</code><code class="descname">TimeOutError</code><a class="headerlink" href="#ltapy.error.TimeOutError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ltapy.error.LightToolsError" title="ltapy.error.LightToolsError"><code class="xref py py-class docutils literal"><span class="pre">ltapy.error.LightToolsError</span></code></a></p>
+<p>Raised when a connection attempt to LightTools was aborted due to
+timeout.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="ltapy.error.APIError">
+<em class="property">exception </em><code class="descclassname">ltapy.error.</code><code class="descname">APIError</code><span class="sig-paren">(</span><em>ltapi</em>, <em>status</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.error.APIError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ltapy.error.LightToolsError" title="ltapy.error.LightToolsError"><code class="xref py py-class docutils literal"><span class="pre">ltapy.error.LightToolsError</span></code></a></p>
+<p>Raised when a LightTools API function returns a nonzero error code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ltapi</strong> (<em>ILTAPIx</em>) – Handle to the LightTools session.</li>
+<li><strong>status</strong> (<em>int</em>) – Status code of the LightTools API function call.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ltapy.jslib">
+<span id="jumpstart-library"></span><h2>JumpStart library<a class="headerlink" href="#module-ltapy.jslib" title="Permalink to this headline">¶</a></h2>
+<p>This module provides access to the JumpStart macro function library.</p>
+<dl class="data">
+<dt id="ltapy.jslib.js">
+<code class="descclassname">ltapy.jslib.</code><code class="descname">js</code><em class="property"> = &lt;win32com.gen_py.LightTools and JumpStart COM API  3.1._JSNET instance&gt;</em><a class="headerlink" href="#ltapy.jslib.js" title="Permalink to this definition">¶</a></dt>
+<dd><p>A global, single instance of the JumpStart macro function library.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ltapy.session">
+<span id="session"></span><h2>Session<a class="headerlink" href="#module-ltapy.session" title="Permalink to this headline">¶</a></h2>
+<p>This module provides connection capabilities to LightTools.</p>
+<dl class="class">
+<dt id="ltapy.session.Session">
+<em class="property">class </em><code class="descclassname">ltapy.session.</code><code class="descname">Session</code><span class="sig-paren">(</span><em>pid=None</em>, <em>timeout=60</em>, <em>_rebuild=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.session.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to a running LightTools session.</p>
+<p>Create a connection to a running LightTools session, using Python as
+client program.  The <cite>lt</cite> attribute provides a handle to the
+connected session.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pid</strong> (<em>int</em><em>, </em><em>optional</em>) – The process ID of an already running
+LightTools session.  If <cite>pid</cite> is given connect to that specific
+session, otherwise connect to an arbitrary session.</li>
+<li><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The time limit in seconds after which a
+connection attempt to LightTools is aborted.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="ltapy.session.Session.lt">
+<code class="descname">lt</code><a class="headerlink" href="#ltapy.session.Session.lt" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ILTAPIx</em> – A handle to the LightTools session.</p>
+</dd></dl>
+
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">TimeOutError</span></code> – If a connection attempt with LightTools was aborted
+due to timeout.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Connect to a running LightTools session by specifying the PID of
+the LightTools process.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="mi">5642</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span> <span class="o">=</span> <span class="n">ses</span><span class="o">.</span><span class="n">lt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Successfully connected to LightTools!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="classmethod">
+<dt id="ltapy.session.Session.new">
+<em class="property">classmethod </em><code class="descname">new</code><span class="sig-paren">(</span><em>version='8.5.0'</em>, <em>timeout=60</em>, <em>_rebuild=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.session.Session.new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a new LightTools instance and connect to that session.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – The LightTools version to be started.</li>
+<li><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The time limit in seconds after which the
+connection attempt to LightTools is aborted.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>A session object, connected with the newly created</dt>
+<dd><p class="first last">LightTools instance.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#ltapy.session.Session" title="ltapy.session.Session">Session</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">TimeOutError</span></code> – If a connection attempt with LightTools was aborted
+due to timeout.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Start a new LightTools instance and connect to that session:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span> <span class="o">=</span> <span class="n">Session</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;8.5.0&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span> <span class="o">=</span> <span class="n">ses</span><span class="o">.</span><span class="n">lt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span><span class="o">.</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;Successfully connected to LightTools!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Core interface</a><ul>
+<li><a class="reference internal" href="#module-ltapy.config">Configuration</a></li>
+<li><a class="reference internal" href="#module-ltapy.error">Exceptions</a></li>
+<li><a class="reference internal" href="#module-ltapy.jslib">JumpStart library</a></li>
+<li><a class="reference internal" href="#module-ltapy.session">Session</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../usage/extended.html" title="previous chapter">Extended functionality</a></li>
+      <li>Next: <a href="extension.html" title="next chapter">Extension modules</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/core.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Florian Boesl.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/api/core.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

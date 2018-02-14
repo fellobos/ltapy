@@ -1,0 +1,568 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Extension modules &#8212; ltapy 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Core interface" href="core.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="extension-modules">
+<h1>Extension modules<a class="headerlink" href="#extension-modules" title="Permalink to this headline">¶</a></h1>
+<p>This part of the documentation covers ltapy’s extension modules.  This
+auxiliary functionality should simplify the programmatic access to
+LightTools.</p>
+<div class="section" id="module-ltapy.apodization">
+<span id="apodization"></span><h2>Apodization<a class="headerlink" href="#module-ltapy.apodization" title="Permalink to this headline">¶</a></h2>
+<p>This module provides objects for dealing with source apodization.</p>
+<dl class="class">
+<dt id="ltapy.apodization.CylinderGridMesh">
+<em class="property">class </em><code class="descclassname">ltapy.apodization.</code><code class="descname">CylinderGridMesh</code><span class="sig-paren">(</span><em>values</em>, <em>bounds</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.CylinderGridMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container object for interacting with cylinder grid mesh data.</p>
+<p>Store the grid mesh data required for cylinder apodization and enable
+data export to various file formats.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong> (<em>numpy.ndarray</em>) – Data values of the cylinder grid mesh
+given as two-dimensional array.</li>
+<li><strong>bounds</strong> (<em>tuple of floats</em>) – Radial and linear data set bounds given
+as (rmin, rmax, lmin, lmax).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="ltapy.apodization.CylinderGridMesh.values">
+<code class="descname">values</code><a class="headerlink" href="#ltapy.apodization.CylinderGridMesh.values" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – Data values of the cylinder grid mesh.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ltapy.apodization.CylinderGridMesh.bounds">
+<code class="descname">bounds</code><a class="headerlink" href="#ltapy.apodization.CylinderGridMesh.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of floats</em> – Radial and linear data set bounds.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ltapy.apodization.CylinderGridMesh.dim">
+<code class="descname">dim</code><a class="headerlink" href="#ltapy.apodization.CylinderGridMesh.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of ints</em> – Dimensions of the data set as (n, m) tuple,
+where n is the number of columns and m is the number of rows.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>Create a <cite>CylinderGridMesh</cite> object from two-dimensional mesh data
+and data bounds:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cgmesh</span> <span class="o">=</span> <span class="n">CylinderGridMesh</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cgmesh</span><span class="o">.</span><span class="n">values</span>
+<span class="go">array([[ 1.,  2.,  3.],</span>
+<span class="go">       [ 4.,  5.,  6.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cgmesh</span><span class="o">.</span><span class="n">bounds</span>
+<span class="go">(-1.0, -0.5, 1.0, 0.5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cgmesh</span><span class="o">.</span><span class="n">dim</span>
+<span class="go">(3, 2)</span>
+</pre></div>
+</div>
+<p>Write the grid mesh data to a cylinder apodization file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cgmesh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;cylinder_apodization.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="ltapy.apodization.CylinderGridMesh.to_csv">
+<code class="descname">to_csv</code><span class="sig-paren">(</span><em>filepath</em>, <em>sort=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.CylinderGridMesh.to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write cylinder grid mesh data to a comma-separated values (CSV) file.</p>
+<p>Each line in the 3-column CSV file corresponds to a specific data
+value, with the radial and linear coordinates of the mesh grid
+midpoint in the first two columns and the data value itself in the
+third column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filepath</strong> (<em>str</em>) – Filepath of the CSV file.</li>
+<li><strong>sort</strong> (<em>bool</em><em>, </em><em>optional</em>) – Numerically sort CSV file values along rows
+if sort is True.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ltapy.apodization.CylinderGridMesh.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>filepath</em>, <em>comment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.CylinderGridMesh.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write grid mesh data to an apodization file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filepath</strong> (<em>str</em>) – Filepath of the apodization file.</li>
+<li><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – Additional comment that appears at the
+beginning of the apodization file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ltapy.apodization.SurfaceGridMesh">
+<em class="property">class </em><code class="descclassname">ltapy.apodization.</code><code class="descname">SurfaceGridMesh</code><span class="sig-paren">(</span><em>values</em>, <em>bounds=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.SurfaceGridMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container object for interacting with surface grid mesh data.</p>
+<p>Store the grid mesh data required for surface apodization and enable
+data export to various file formats.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong> (<em>numpy.ndarray</em>) – Data values of the surface grid mesh given
+as two-dimensional array.</li>
+<li><strong>bounds</strong> (<em>tuple of floats</em><em>, </em><em>optional</em>) – Spatial or angular data set
+bounds given as (umin, vmin, umax, vmax).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="ltapy.apodization.SurfaceGridMesh.values">
+<code class="descname">values</code><a class="headerlink" href="#ltapy.apodization.SurfaceGridMesh.values" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – Data values of the surface grid mesh.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ltapy.apodization.SurfaceGridMesh.bounds">
+<code class="descname">bounds</code><a class="headerlink" href="#ltapy.apodization.SurfaceGridMesh.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of floats</em> – Spatial or angular data set bounds.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ltapy.apodization.SurfaceGridMesh.dim">
+<code class="descname">dim</code><a class="headerlink" href="#ltapy.apodization.SurfaceGridMesh.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of ints</em> – Dimensions of the data set as (n, m) tuple,
+where n is the number of columns and m is the number of rows.</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>Create a <cite>SurfaceGridMesh</cite> object from two-dimensional mesh data
+and (optional) data bounds:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sgmesh</span> <span class="o">=</span> <span class="n">SurfaceGridMesh</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sgmesh</span><span class="o">.</span><span class="n">values</span>
+<span class="go">array([[ 1.,  2.,  3.],</span>
+<span class="go">       [ 4.,  5.,  6.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sgmesh</span><span class="o">.</span><span class="n">bounds</span>
+<span class="go">(-1.0, -0.5, 1.0, 0.5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sgmesh</span><span class="o">.</span><span class="n">dim</span>
+<span class="go">(3, 2)</span>
+</pre></div>
+</div>
+<p>Write the grid mesh data to a surface apodization file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sgmesh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;surface_apodization.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="ltapy.apodization.SurfaceGridMesh.to_csv">
+<code class="descname">to_csv</code><span class="sig-paren">(</span><em>filepath</em>, <em>sort=False</em>, <em>ascending=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.SurfaceGridMesh.to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write surface grid mesh data to a comma-separated values (CSV) file.</p>
+<p>Each line in the 3-column CSV file corresponds to a specific data
+value, with the xy-coordinates of the mesh grid midpoint in the first
+two columns and the data value itself in the third column.</p>
+<p>Data bounds must be specified because they are required for the
+calculation of the mesh grid midponts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filepath</strong> (<em>str</em>) – Filepath of the CSV file.</li>
+<li><strong>sort</strong> (<em>bool</em><em>, </em><em>optional</em>) – Numerically sort CSV file values along rows
+if sort is True.</li>
+<li><strong>ascending</strong> (<em>bool</em><em>, </em><em>optional</em>) – The minimum value of V (vmin) is in
+the first row if ascending is True.  Refer to the LightTools
+Help (Section: Apodization Data Bounds) for an explanation how
+bounds are mapped to the data values.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal"><span class="pre">ValueError</span></code> – If no data bounds are specified.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ltapy.apodization.SurfaceGridMesh.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>filepath</em>, <em>comment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.SurfaceGridMesh.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write grid mesh data to an apodization file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filepath</strong> (<em>str</em>) – Filepath of the apodization file.</li>
+<li><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – Additional comment that appears at the
+beginning of the apodization file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ltapy.apodization.VolumeGridMesh">
+<em class="property">class </em><code class="descclassname">ltapy.apodization.</code><code class="descname">VolumeGridMesh</code><span class="sig-paren">(</span><em>values</em>, <em>bounds</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.VolumeGridMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Container object for interacting with volume grid mesh data.</p>
+<p>Store the grid mesh data required for volume apodization and enable
+data export to various file formats.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong> (<em>numpy.ndarray</em>) – Data values of the volume grid mesh
+given as three-dimensional array.</li>
+<li><strong>bounds</strong> (<em>tuple of floats</em>) – Cartesian data set bounds in XYZ
+direction given as (xmin, xmax, ymin, ymax, zmin, zmax).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="ltapy.apodization.VolumeGridMesh.values">
+<code class="descname">values</code><a class="headerlink" href="#ltapy.apodization.VolumeGridMesh.values" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>numpy.ndarray</em> – Data values of the volume grid mesh.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ltapy.apodization.VolumeGridMesh.bounds">
+<code class="descname">bounds</code><a class="headerlink" href="#ltapy.apodization.VolumeGridMesh.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of floats</em> – Cartesian data set bounds in XYZ
+direction.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ltapy.apodization.VolumeGridMesh.dim">
+<code class="descname">dim</code><a class="headerlink" href="#ltapy.apodization.VolumeGridMesh.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of ints</em> – Dimensions of the data set as (n, m, p)
+tuple, where n is the number of columns, m is the number of
+rows and p is the number of layers (xy matrices).</p>
+</dd></dl>
+
+<p class="rubric">Examples</p>
+<p>Create a <cite>VolumeGridMesh</cite> object from three-dimensional mesh data
+and data bounds:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+<span class="go">        [[1, 0, 7], [2, 1, 6], [4, 5 ,1], [1, 1, 6]],</span>
+<span class="go">        [[4, 5, 1], [1, 2, 3], [2, 2, 2], [1, 2, 3]],</span>
+<span class="go">    ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bounds</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vgmesh</span> <span class="o">=</span> <span class="n">VolumeGridMesh</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">bounds</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vgmesh</span><span class="o">.</span><span class="n">values</span>
+<span class="go">array([[[1, 0, 7],</span>
+<span class="go">        [2, 1, 6],</span>
+<span class="go">        [4, 5, 1],</span>
+<span class="go">        [1, 1, 6]],</span>
+<span class="go">       [[4, 5, 1],</span>
+<span class="go">        [1, 2, 3],</span>
+<span class="go">        [2, 2, 2],</span>
+<span class="go">        [1, 2, 3]]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vgmesh</span><span class="o">.</span><span class="n">bounds</span>
+<span class="go">(-1.5, 1.5, -2.0, 2.0, 0, 5)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vgmesh</span><span class="o">.</span><span class="n">dim</span>
+<span class="go">(3, 4, 2)</span>
+</pre></div>
+</div>
+<p>Write the grid mesh data to a volume apodization file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vgmesh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;volume_apodization.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="ltapy.apodization.VolumeGridMesh.to_csv">
+<code class="descname">to_csv</code><span class="sig-paren">(</span><em>filepath</em>, <em>sort=False</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.VolumeGridMesh.to_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write volume grid mesh data to a comma-separated values (CSV) file.</p>
+<p>Each line in the 4-column CSV file corresponds to a specific data
+value, with the xyz-coordinates of the mesh grid midpoint in the first
+three columns and the data value itself in the fourth column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filepath</strong> (<em>str</em>) – Filepath of the CSV file.</li>
+<li><strong>sort</strong> (<em>bool</em><em>, </em><em>optional</em>) – Numerically sort CSV file values along rows
+if sort is True.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ltapy.apodization.VolumeGridMesh.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>filepath</em>, <em>comment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.VolumeGridMesh.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write grid mesh data to an apodization file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filepath</strong> (<em>str</em>) – Filepath of the apodization file.</li>
+<li><strong>comment</strong> (<em>str</em><em>, </em><em>optional</em>) – Additional comment that appears at the
+beginning of the apodization file.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ltapy.apodization.read_cgmesh">
+<code class="descclassname">ltapy.apodization.</code><code class="descname">read_cgmesh</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.read_cgmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a cylinder apodization file into a <cite>CylinderGridMesh</cite> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath</strong> (<em>str</em>) – Filepath of the cylinder apodization file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>A container object for interacting with the</dt>
+<dd>cylinder grid mesh data.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#ltapy.apodization.CylinderGridMesh" title="ltapy.apodization.CylinderGridMesh">CylinderGridMesh</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ltapy.apodization.read_sgmesh">
+<code class="descclassname">ltapy.apodization.</code><code class="descname">read_sgmesh</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.read_sgmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a surface apodization file into a <cite>SurfaceGridMesh</cite> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath</strong> (<em>str</em>) – Filepath of the surface apodization file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>A container object for interacting with the</dt>
+<dd>surface grid mesh data.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#ltapy.apodization.SurfaceGridMesh" title="ltapy.apodization.SurfaceGridMesh">SurfaceGridMesh</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ltapy.apodization.read_vgmesh">
+<code class="descclassname">ltapy.apodization.</code><code class="descname">read_vgmesh</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.apodization.read_vgmesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a volume apodization file into a <cite>VolumeGridMesh</cite> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filepath</strong> (<em>str</em>) – Filepath of the volume apodization file.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>A container object for interacting with the volume</dt>
+<dd>grid mesh data.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#ltapy.apodization.VolumeGridMesh" title="ltapy.apodization.VolumeGridMesh">VolumeGridMesh</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ltapy.utils">
+<span id="utils"></span><h2>Utils<a class="headerlink" href="#module-ltapy.utils" title="Permalink to this headline">¶</a></h2>
+<p>This module provides utility functions, useful for external consumption.</p>
+<dl class="function">
+<dt id="ltapy.utils.binspace">
+<code class="descclassname">ltapy.utils.</code><code class="descname">binspace</code><span class="sig-paren">(</span><em>num</em>, <em>start</em>, <em>stop</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.utils.binspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return evenly spaced bin midpoints over the given interval.</p>
+<p>Calculate <cite>num</cite> evenly spaced bin midpoints over the closed interval
+[<cite>start</cite>, <cite>stop</cite>].</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> (<em>int</em>) – Number of bin midpoints to generate. Must be positive.</li>
+<li><strong>start</strong> (<em>float</em>) – The starting value of the interval.</li>
+<li><strong>stop</strong> (<em>float</em>) – The end value of the interval.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt><cite>num</cite> equally spaced bin midpoints in the interval</dt>
+<dd><p class="first last">[<cite>start</cite>, <cite>stop</cite>].</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.ndarray</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span> <span class="o">=</span> <span class="n">binspace</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bins</span>
+<span class="go">array([ -9.09090909e-01,  -7.27272727e-01,  -5.45454545e-01,</span>
+<span class="go">        -3.63636364e-01,  -1.81818182e-01,   8.32667268e-17,</span>
+<span class="go">         1.81818182e-01,   3.63636364e-01,   5.45454545e-01,</span>
+<span class="go">         7.27272727e-01,   9.09090909e-01])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="ltapy.utils.get_current_file_folder">
+<code class="descclassname">ltapy.utils.</code><code class="descname">get_current_file_folder</code><span class="sig-paren">(</span><em>lt</em><span class="sig-paren">)</span><a class="headerlink" href="#ltapy.utils.get_current_file_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the folder of the current LightTools file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ltapi</strong> (<em>ILTAPIx</em>) – A handle to the LightTools session.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The file folder of the current LightTools file.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Extension modules</a><ul>
+<li><a class="reference internal" href="#module-ltapy.apodization">Apodization</a></li>
+<li><a class="reference internal" href="#module-ltapy.utils">Utils</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="core.html" title="previous chapter">Core interface</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/api/extension.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Florian Boesl.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/api/extension.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

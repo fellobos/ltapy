@@ -1,0 +1,316 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>The enhanced API interface &#8212; ltapy 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Extended functionality" href="extended.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="the-enhanced-api-interface">
+<h1>The enhanced API interface<a class="headerlink" href="#the-enhanced-api-interface" title="Permalink to this headline">¶</a></h1>
+<p>This page gives a good introduction in how to get started with the
+core functionality that is provided by ltapy.</p>
+<p>Before you begin, make sure that ltapy is <a class="reference internal" href="install.html"><span class="doc">installed</span></a>
+properly on your system.</p>
+<p>To use the Python interface to the LightTools API you first have to
+create a <a class="reference internal" href="#connection-capabilities"><span class="std std-ref">connection</span></a> to LightTools.</p>
+<div class="section" id="connection-capabilities">
+<span id="id1"></span><h2>Connection capabilities<a class="headerlink" href="#connection-capabilities" title="Permalink to this headline">¶</a></h2>
+<p>Connecting to a LightTools session is simple. The <a class="reference internal" href="../api/core.html#ltapy.session.Session" title="ltapy.session.Session"><code class="xref py py-class docutils literal"><span class="pre">Session</span></code></a> object enables you to connect either to a
+running LightTools session or to start a new instance of LightTools
+and connect to that session:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ltapy.session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span> <span class="o">=</span> <span class="n">ltapy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="mi">4711</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span> <span class="o">=</span> <span class="n">ses</span><span class="o">.</span><span class="n">lt</span>
+</pre></div>
+</div>
+<p>The above, connects Python with a running LightTools session that has
+the given process ID (PID). If no PID is given, a connection to an
+arbitrary LightTools session will be established.</p>
+<p>You can start a new instance of LightTools and connect to that session
+by specifying the version string of the desired LightTools version.
+This requires, of course, that the wanted version of LightTools is
+installed on your system:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ltapy.session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span> <span class="o">=</span> <span class="n">ltapy</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">Session</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="s2">&quot;8.5.0&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span> <span class="o">=</span> <span class="n">ses</span><span class="o">.</span><span class="n">lt</span>
+</pre></div>
+</div>
+<p>In either case you have now an enhanced LightTools API object called
+<code class="docutils literal"><span class="pre">lt</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lt</span>
+<span class="go">&lt;win32com.gen_py.LightTools 4.0 Type Library.ILTAPI4 instance at 0x137756456&gt;</span>
+</pre></div>
+</div>
+<p>In addition to the standard LightTools API functions, the enhanced
+LightTools API object provides <a class="reference internal" href="#automatic-error-handling"><span class="std std-ref">automatic error handling</span></a> and an <a class="reference internal" href="#advanced-dblist-interface"><span class="std std-ref">advanced DbList() interface</span></a>.</p>
+</div>
+<div class="section" id="automatic-error-handling">
+<span id="id2"></span><h2>Automatic error handling<a class="headerlink" href="#automatic-error-handling" title="Permalink to this headline">¶</a></h2>
+<p>Most LightTools API functions return a status code to indicate wether
+the LightTools command completed successfully or not. If the command
+was executed without error, the returned value is zero, or otherwise,
+greater than zero if an error occured.</p>
+<p>The following code example could be from an appliation such as Visual
+Basic (VB), using the standard LightTools API. The database access in
+the highlighted line results in an error (indicated by the non-zero
+status code) because there is a typo in the given data access key:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>&gt;&gt;&gt; logfile = lt.DbGet(&quot;LENS_MANAGER[1]&quot;, &quot;LogFileName&quot;, status)
+&gt;&gt;&gt; Debug.Print(status)
+0
+<span class="hll">&gt;&gt;&gt; logfile = lt.DbGet(&quot;LENS_MANAGER[1]&quot;, &quot;LoggFileName&quot;, status)
+</span>&gt;&gt;&gt; Debug.Print(status)
+33
+</pre></div>
+</div>
+<p>If you want to make sure that your program is working correctly you
+would have to check the return status of each LightTools command that
+gets executed within your program. This might be reasonable for small
+scripts but is, for sure, a tedious and error prone task for larger
+programs with many API function calls.</p>
+<p>To overcome this issue, the Python interface to the LightTools API
+provides builtin, automatic error handling:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logfile</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">DbGet</span><span class="p">(</span><span class="s2">&quot;LENS_MANAGER[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;LoggFileName&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;E:\Repos\ltapy\ltapy\_ltapi.py&quot;</span>, line <span class="m">199</span>, in <span class="n">wrapper</span>
+    <span class="k">return</span> <span class="n">_process_return_value</span><span class="p">(</span><span class="n">lt</span><span class="p">,</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">return_value</span><span class="p">)</span>
+  File <span class="nb">&quot;E:\Repos\ltapy\ltapy\_ltapi.py&quot;</span>, line <span class="m">261</span>, in <span class="n">_process_return_value</span>
+    <span class="k">raise</span> <span class="n">error</span><span class="o">.</span><span class="n">APIError</span><span class="p">(</span><span class="n">lt</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+<span class="gr">ltapy.error.APIError</span>: <span class="n">[33] ltStatusInvalidFunctionString:</span>
+</pre></div>
+</div>
+<p>As before, the API function call did not succeed.  But this time a
+custom <a class="reference internal" href="../api/core.html#ltapy.error.APIError" title="ltapy.error.APIError"><code class="xref py py-class docutils literal"><span class="pre">APIError</span></code></a> exception is raised
+and notifys you that something went wrong. This feature eliminates the
+need to check the return status of LightTools API function calls and
+ensures that errors never can pass silently.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Python interface does not use the <code class="docutils literal"><span class="pre">status</span></code> parameter, that
+is required by corresponding LightTools API functions. The
+<code class="docutils literal"><span class="pre">status</span></code> parameter has a default value of <code class="docutils literal"><span class="pre">0</span></code> and must not be
+provided by you.</p>
+</div>
+</div>
+<div class="section" id="advanced-dblist-interface">
+<span id="id3"></span><h2>Advanced DbList() interface<a class="headerlink" href="#advanced-dblist-interface" title="Permalink to this headline">¶</a></h2>
+<p>You can access the LightTools database via the corresponding data
+access functions. The <code class="docutils literal"><span class="pre">DbList</span></code> function together with the API
+functions that operate on the object list (e.g. <code class="docutils literal"><span class="pre">ListAtPos()</span></code>,
+<code class="docutils literal"><span class="pre">ListNext()</span></code>, <code class="docutils literal"><span class="pre">ListSize()</span></code>, …) play a central role when you want
+to loop and scan through the LightTools database.</p>
+<p>For example, this is how you get the names of all existing solids
+using the above mentioned data access functions:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">objlist</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">DbList</span><span class="p">(</span><span class="s2">&quot;COMPONENTS[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;SOLID&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">objsize</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">ListSize</span><span class="p">(</span><span class="n">objlist</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">objsize</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">objkey</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">ListNext</span><span class="p">(</span><span class="n">objlist</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">objname</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">DbGet</span><span class="p">(</span><span class="n">objkey</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">objname</span><span class="p">)</span>
+<span class="go">Cube_1</span>
+<span class="go">Sphere_2</span>
+<span class="go">Ellipsoid_3</span>
+<span class="go">Toroid_4</span>
+<span class="go">Cylinder_5</span>
+</pre></div>
+</div>
+<p>With the above code, you can get your job done. But there are some
+drawbacks that make things unnecessary complicated:</p>
+<ul class="simple">
+<li>You have to remember all the names of the API functions that operate
+on the object list (e.g. <code class="docutils literal"><span class="pre">ListAtPos()</span></code>, <code class="docutils literal"><span class="pre">ListNext()</span></code>,
+<code class="docutils literal"><span class="pre">ListSize()</span></code>, …).</li>
+<li>The code is verbose, i.e. you have to write a lot of boilerplate
+code just to get a small task done (like looping through all the
+solids in the database).</li>
+<li>The object list does not support direct iteration. You have to loop
+manually through the list items by using the <code class="docutils literal"><span class="pre">range</span></code> function.</li>
+</ul>
+<p>To overcome these issues, ltapy provides an advanced <code class="docutils literal"><span class="pre">DbList</span></code>
+object. It offers a simpler and more “pythonic” interface to the
+object list. Looping through the LightTools database gets as simple as
+that:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">solid</span> <span class="ow">in</span> <span class="n">lt</span><span class="o">.</span><span class="n">DbList</span><span class="p">(</span><span class="s2">&quot;COMPONENTS[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;SOLID&quot;</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">DbGet</span><span class="p">(</span><span class="n">solid</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="go">Cube_1</span>
+<span class="go">Sphere_2</span>
+<span class="go">Ellipsoid_3</span>
+<span class="go">Toroid_4</span>
+<span class="go">Cylinder_5</span>
+</pre></div>
+</div>
+<p>Nice, right? The advanced <code class="docutils literal"><span class="pre">DbList</span></code> object is essentially a wrapper
+object that replaces the original <code class="docutils literal"><span class="pre">DbList</span></code> function. It provides
+some new functionality which is described in the following:</p>
+<p>As seen above, you create an object list with the (wrapped) <code class="docutils literal"><span class="pre">DbList</span></code>
+API function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">DbList</span><span class="p">(</span><span class="s2">&quot;COMPONENTS[1]&quot;</span><span class="p">,</span> <span class="s2">&quot;SOLID&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The value of the <code class="docutils literal"><span class="pre">DbList</span></code> object is still the (encrypted) key to the
+object list. This ensures backward compatiblity to API functions that
+operate on the object list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span>
+<span class="go">&#39;@TP100039&#39;</span>
+</pre></div>
+</div>
+<p>If you need more information you can print the contents of the object
+list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="go">Data Key:    COMPONENTS[1]</span>
+<span class="go">Filter:      SOLID</span>
+<span class="go">List Key:    @TP100039</span>
+<span class="go">List Items:  5 items, 0 to 4</span>
+<span class="go">0     @Qs100034   Cube_1</span>
+<span class="go">1     @Dh100035   Sphere_2</span>
+<span class="go">2     @db100036   Ellipsoid_3</span>
+<span class="go">3     @KG100037   Toroid_4</span>
+<span class="go">4     @Fn100038   Cylinder_5</span>
+</pre></div>
+</div>
+<p>The builtin <code class="docutils literal"><span class="pre">len</span></code> function returns the size of the object list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">solids</span><span class="p">)</span>
+<span class="go">5</span>
+</pre></div>
+</div>
+<p>The key feature is that the <code class="docutils literal"><span class="pre">DbList</span></code> object now supports direct
+iteration over the items of the object list:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">solid</span> <span class="ow">in</span> <span class="n">solids</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">print</span><span class="p">(</span><span class="n">solid</span><span class="p">)</span>
+<span class="go">@Qs100034</span>
+<span class="go">@Dh100035</span>
+<span class="go">@db100036</span>
+<span class="go">@KG100037</span>
+<span class="go">@Fn100038</span>
+</pre></div>
+</div>
+<p>You can conveniently access individual list elements via square
+bracket notation. <code class="docutils literal"><span class="pre">integer</span></code>, <code class="docutils literal"><span class="pre">sclice</span></code> or <code class="docutils literal"><span class="pre">string</span></code> are valid list
+indices:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&#39;@Qs100034&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">&#39;@Fn100038&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span><span class="p">[</span><span class="s2">&quot;Sphere_2&quot;</span><span class="p">]</span>
+<span class="go">&#39;@Dh100035&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">solids</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="go">[&#39;@Dh100035&#39;, &#39;@db100036&#39;, &#39;@KG100037&#39;, &#39;@Fn100038&#39;]</span>
+</pre></div>
+</div>
+<p>Membership testing is also supported:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;Toroid_4&quot;</span> <span class="ow">in</span> <span class="n">solids</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>As you have seen, the <code class="docutils literal"><span class="pre">DbList</span></code> object provides an improved interface
+to LightTools object lists and its related API functions. The whole
+functionality for data access is implemented iternally which allows
+you to use the object in the same way as a builtin Python container
+type object.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Backward compatibility to the original LightTools API functions is
+given. This means that you can still pass the <code class="docutils literal"><span class="pre">DbList</span></code> object to
+API functions that require an object list key as input argument.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">The enhanced API interface</a><ul>
+<li><a class="reference internal" href="#connection-capabilities">Connection capabilities</a></li>
+<li><a class="reference internal" href="#automatic-error-handling">Automatic error handling</a></li>
+<li><a class="reference internal" href="#advanced-dblist-interface">Advanced DbList() interface</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="install.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="extended.html" title="next chapter">Extended functionality</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/usage/enhanced.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Florian Boesl.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/usage/enhanced.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
