@@ -1,0 +1,7 @@
+name: ltapy-dev
+dependencies:
+- python=3.6
+- numpy
+- pandas
+- psutil
+- pywin32
