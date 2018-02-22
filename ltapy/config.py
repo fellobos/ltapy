@@ -29,7 +29,7 @@ _LOGGING = {
         },
     },
     "loggers": {
-        "lighttools": {  # must match logger name, e.g. lighttools.ltapi
+        "ltapy": {  # must match logger name, e.g. ltapy._ltapi
             "handlers": ["console"],
             "level": "DEBUG",
             "propagate": False,  # due to default logger in jupyter qtconsole
